@@ -17,7 +17,7 @@ const Nav = (isAdmin) => {
 
 
   return (
-    <nav className="flex flex-col h-screen absolute gap-4 top-0 left-0 pt-4 w-[250px] bg-white shadow">
+    <nav className="flex flex-col h-screen gap-4 pt-4 w-[250px] bg-white shadow">
         <Link href="/" className="flex gasidebar_icon flex-center" >
             <Image 
                 src="icons/vou_logo.svg"

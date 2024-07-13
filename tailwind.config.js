@@ -3,10 +3,12 @@ const { Montserrat } = require('next/font/google');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
+ 
+    // Or if using `src` directory:
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -24,6 +26,23 @@ module.exports = {
         pending: '#56CC56', // Yellow 
         active: '#56CC56',  // green 
         infoBlue: '#2196F3',   // Info
+        yellow: {
+          50: '#FFF5D9',
+          100: '#56CC56',
+        },
+        blue: {
+          50: '#E7EDFF',
+          100: '#396AFF',
+          200: '#718EBF',
+        },
+        pink: {
+          50: '#FFE0EB',
+          100: '#FF82AC',
+        },
+        green: {
+          50: '#DCFAF8',
+          100: '#16DBCC',
+        },
         grey: {
           50: '#f4f4f4',
           100: '#dedede',
