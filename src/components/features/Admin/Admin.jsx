@@ -46,7 +46,6 @@ const Admin = () => {
       <h1 className='text-[40px] header font-bold text-left'>Dashboard</h1>
       <AdminOverview overview={overview}/>
       <AdminStatistic />
-      
     </div>
   )
 }

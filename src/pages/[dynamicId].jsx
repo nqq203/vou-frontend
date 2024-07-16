@@ -3,6 +3,7 @@ import React, { useCallback } from 'react'
 import BrandPage from './admin';
 import AdminPage from './brand';
 import HomePage from './index';
+import AdminAccountManagementPage from './admin/accounts';
 
 function DynamicPage() {
   const router = useRouter();
@@ -17,6 +18,9 @@ function DynamicPage() {
     else if (asPath.startsWith('/')) {
       console.log('home page');
       return <HomePage />
+    }
+    else if (asPath.startsWith('/admin/accounts')) {
+      return <AdminAccountManagementPage />
     }
     return
   }, [asPath]);

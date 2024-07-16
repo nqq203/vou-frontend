@@ -80,7 +80,7 @@ p,span,h1,h2,h3,h4,h5,h6 {
 /* Tailwind Styles */
 
 .app {
-  @apply relative z-10 flex justify-center items-center flex-row;
+  @apply relative z-10 flex justify-center items-center flex-row bg-background;
 }
 
 .global_padding{
