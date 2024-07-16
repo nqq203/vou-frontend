@@ -5,7 +5,7 @@ import Table from "@components/common/Table"
 import { FaSackDollar } from "react-icons/fa6"
 import { FaHandHoldingDollar } from "react-icons/fa6"
 import Image from "next/image"
-import { MdEdit } from "react-icons/md";
+import { useEffect, useMemo } from "react"
 
 export default function AdminAccountManagement() {
   const overview = [
@@ -46,12 +46,11 @@ export default function AdminAccountManagement() {
   const header = [
     "STT",
     "Họ tên",
-    "username",
-    "email",
+    "Username",
+    "Email",
     "Số điện thoại",
     "Quyền hạn",
     "Tình trạng",
-    " "
   ]
 
   const rows = [
@@ -63,7 +62,6 @@ export default function AdminAccountManagement() {
       phone: "0987654321",
       role: "Admin",
       status: "active",
-      icon: <MdEdit />
     },
     {
       no: "2",
@@ -73,7 +71,6 @@ export default function AdminAccountManagement() {
       phone: "0987654322",
       role: "User",
       status: "inactive",
-      icon: <MdEdit/>
     },
     {
       no: "3",
@@ -83,7 +80,6 @@ export default function AdminAccountManagement() {
       phone: "0987654323",
       role: "User",
       status: "active",
-      icon: <MdEdit/>
     },
     {
       no: "4",
@@ -93,7 +89,6 @@ export default function AdminAccountManagement() {
       phone: "0987654324",
       role: "User",
       status: "active",
-      icon: <MdEdit/>
     },
     {
       no: "5",
@@ -103,7 +98,6 @@ export default function AdminAccountManagement() {
       phone: "0987654325",
       role: "User",
       status: "active",
-      icon: <MdEdit/>
     },
     {
       no: "6",
@@ -113,9 +107,73 @@ export default function AdminAccountManagement() {
       phone: "0987654326",
       role: "User",
       status: "pending",
-      icon: <MdEdit/>
+    },
+    {
+      no: "7",
+      name: "Emily Doe",
+      username: "emily.doe",
+      email: "emily.doe@example.com",
+      phone: "0987654326",
+      role: "User",
+      status: "pending",
+    },
+    {
+      no: "8",
+      name: "Emily Doe",
+      username: "emily.doe",
+      email: "emily.doe@example.com",
+      phone: "0987654326",
+      role: "User",
+      status: "pending",
+    },
+    {
+      no: "9",
+      name: "Emily Doe",
+      username: "emily.doe",
+      email: "emily.doe@example.com",
+      phone: "0987654326",
+      role: "User",
+      status: "pending",
+    },
+    {
+      no: "10",
+      name: "Emily Doe",
+      username: "emily.doe",
+      email: "emily.doe@example.com",
+      phone: "0987654326",
+      role: "User",
+      status: "pending",
+    },
+    {
+      no: "11",
+      name: "Emily Doe",
+      username: "emily.doe",
+      email: "emily.doe@example.com",
+      phone: "0987654326",
+      role: "User",
+      status: "pending",
     }
   ]
+
+  const newRows = useMemo(() => {
+    const nRows = rows.map(row => {
+      if (row.status.toLowerCase() === 'active') {
+        return {...row, status: <div className="border-2 border-active rounded-[50px] pl-[10px] pr-[10px] pt-1 pb-1 text-active">Active</div>}
+      }
+      else if (row.status.toLowerCase() === 'inactive') {
+        return {...row, status: <div className="border-2 border-red rounded-[50px] pl-1 pr-1 pt-1 pb-1 text-red">Inactive</div>}
+      }
+      else if (row.status.toLowerCase() === 'pending') {
+        return {...row, status: <div className="border-2 border-pending rounded-[50px] pl-1 pr-1 pt-1 pb-1 text-pending">Pending</div>}
+      }
+    })
+    return nRows
+  }, [rows])
+
+  const scrollViewStyle = {
+    minHeight: "550px",
+    maxHeight: "550px",
+  }
 
   return (
     <div className='container p-6 mx-auto'>
@@ -124,7 +182,7 @@ export default function AdminAccountManagement() {
       <AdminStatistic />
       <div className='flex flex-col mt-5'>
         <SearchBar />
-        <Table head={header} rows={rows}/>
+        <Table head={header} rows={newRows} isEditTable={true} scrollViewStyle={scrollViewStyle}/>
       </div>
     </div>
   )

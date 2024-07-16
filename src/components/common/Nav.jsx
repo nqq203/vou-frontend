@@ -62,21 +62,28 @@ const Nav = (isAdmin) => {
 
         {/* Admin */}
         <ul className="">
-            <li className="sidebar_icon sidebar_active">
-                <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>
-                <AiFillHome size={25}/>
-                Trang chủ
-            </li>
+            <Link href="/admin">
+                <li className="sidebar_icon sidebar_active">
+                    <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>
+                    <AiFillHome size={25}/>
+                    Trang chủ
+                </li>
+            </Link>
 
-            <li className="sidebar_icon">
-                <MdSupervisorAccount size={25}/>
-                Quản lí tài khoản
-            </li>
+            <Link href="/admin/accounts">
+                <li className="sidebar_icon">
+                        <MdSupervisorAccount size={25}/>
+                        Quản lí tài khoản
+                </li>
+            </Link>
 
-            <li className="sidebar_icon">
-                <MdEvent size={25}/>
-                Quản lí sự kiện
-            </li>
+
+            <Link href="/admin/events">
+                <li className="sidebar_icon">
+                    <MdEvent size={25}/>
+                    Quản lí sự kiện
+                </li>
+            </Link>
 
             <li className="sidebar_icon">
                 <FaGamepad size={25}/>
