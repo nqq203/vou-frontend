@@ -16,9 +16,9 @@ const Home = () => {
         Đăng ký ngay!!!
         </p>
 
-        <Link href="/admin" className="black_btn mt-5">Go to Admin</Link>
+        <Link href="/admin" className="primary_btn mt-5">Go to Admin</Link>
 
-        <Link href="/brand" className="black_btn mt-5">Go to Brands</Link>
+        <Link href="/brand" className="primary_btn mt-5">Go to Brands</Link>
 
         {/* <Feed className="mt-5" /> */}
         <p className="desc text-center">
