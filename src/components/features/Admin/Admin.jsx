@@ -19,7 +19,7 @@ const Admin = () => {
     },
     {
       icon: <Image
-              src="icons/001-medical.svg"
+              src="/icons/001-medical.svg"
               alt="EXPENSE"
               width={32}
               height={32}
@@ -30,7 +30,7 @@ const Admin = () => {
     },
     {
       icon: <Image
-              src="icons/003-saving.svg"
+              src="/icons/003-saving.svg"
               alt="total saving"
               width={32}
               height={32}

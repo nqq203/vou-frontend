@@ -1,9 +1,10 @@
 "use client"
-
 import ScrollView from "./ScrollView";
 import { MdEdit } from "react-icons/md";
+import { useEffect, useState } from "react";
 
-export default function Table({ head, rows, isEditTable, scrollViewStyle }) {
+export default function Table({ head, rows, isEditTable, scrollViewStyle, setInfo, handleOpenForm }) {
+
   return (
     <div className="rounded-[20px] shadow-md mt-5 border-spacing-x-2 bg-white">
       <table className="table-fixed text-center items-center ml-2 mr-10">
@@ -22,7 +23,10 @@ export default function Table({ head, rows, isEditTable, scrollViewStyle }) {
             <tbody>
               {rows?.map(row => {
                 return (
-                  <tr key={row.id} className="relative">
+                  <tr key={row.id} className="relative" onClick={() => {
+                    setInfo(row)
+                    handleOpenForm()
+                  }}>
                     {Object.values(row).map((cell, index) => (
                       <td className="border-b-2 border-grey-50 pt-3 pb-3 text-[14px] w-[200px] cursor-pointer" key={index}>{cell.length > 10 ? cell.slice(0, 10) + "..." : cell}</td>
                     ))}

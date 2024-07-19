@@ -4,6 +4,7 @@ import BrandPage from './admin';
 import AdminPage from './brand';
 import HomePage from './index';
 import AdminAccountManagementPage from './admin/accounts';
+import AdminGameManagementPage from './admin/games';
 
 function DynamicPage() {
   const router = useRouter();
@@ -21,6 +22,9 @@ function DynamicPage() {
     }
     else if (asPath.startsWith('/admin/accounts')) {
       return <AdminAccountManagementPage />
+    }
+    else if (asPath.startsWith('/admin/games')) {
+      return <AdminGameManagementPage />
     }
     return
   }, [asPath]);

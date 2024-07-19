@@ -5,7 +5,8 @@ import Table from "@components/common/Table"
 import { FaSackDollar } from "react-icons/fa6"
 import { FaHandHoldingDollar } from "react-icons/fa6"
 import Image from "next/image"
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
+import AdminEditGameForm from "../AdminEditGameForm/AdminEditGameForm"
 
 export default function AdminAccountManagement() {
   const overview = [
@@ -21,7 +22,7 @@ export default function AdminAccountManagement() {
     },
     {
       icon: <Image
-              src="icons/001-medical.svg"
+              src="/icons/001-medical.svg"
               alt="EXPENSE"
               width={32}
               height={32}
@@ -32,7 +33,7 @@ export default function AdminAccountManagement() {
     },
     {
       icon: <Image
-              src="icons/003-saving.svg"
+              src="/icons/003-saving.svg"
               alt="total saving"
               width={32}
               height={32}
@@ -175,14 +176,32 @@ export default function AdminAccountManagement() {
     maxHeight: "550px",
   }
 
+  const [isOpenEditAccount, setIsOpenEditAccount] = useState(false)
+  const [isOpenNotification, setIsOpenNotification] = useState(false)
+
+  function handleCloseForm() {
+    setIsOpenEditAccount(false)
+  }
+  
+  function handleOpenForm() {
+    setIsOpenEditAccount(true)
+  }
+
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    console.log(userInfo);
+  }, [userInfo])
+
   return (
-    <div className='container p-6 mx-auto'>
+    <div className='container relative p-6 mx-auto'>
+      {isOpenEditAccount && <AdminEditGameForm userInfo={userInfo} handleClose={handleCloseForm}/>}
       <h1 className='text-[40px] header font-bold text-left'>Dashboard</h1>
       <AdminOverview overview={overview}/>
       <AdminStatistic />
       <div className='flex flex-col mt-5'>
         <SearchBar />
-        <Table head={header} rows={newRows} isEditTable={true} scrollViewStyle={scrollViewStyle}/>
+        <Table head={header} rows={newRows} isEditTable={true} scrollViewStyle={scrollViewStyle} setInfo={setUserInfo} handleOpenForm={handleOpenForm}/>
       </div>
     </div>
   )

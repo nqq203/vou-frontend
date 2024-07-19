@@ -20,7 +20,7 @@ const Nav = (isAdmin) => {
     <nav className="flex flex-col h-screen gap-4 pt-4 w-[250px] bg-white shadow">
         <Link href="/" className="flex gasidebar_icon flex-center" >
             <Image 
-                src="icons/vou_logo.svg"
+                src="/icons/vou_logo.svg"
                 alt="VOU"
                 width={30}
                 height={30}
@@ -85,10 +85,12 @@ const Nav = (isAdmin) => {
                 </li>
             </Link>
 
-            <li className="sidebar_icon">
-                <FaGamepad size={25}/>
-                Quản lí trò chơi
-            </li>
+            <Link href="/admin/games">
+                <li className="sidebar_icon">
+                    <FaGamepad size={25}/>
+                    Quản lí trò chơi
+                </li>
+            </Link>
 
             <li className="sidebar_icon">
                 <MdAccountBox size={25}/>
