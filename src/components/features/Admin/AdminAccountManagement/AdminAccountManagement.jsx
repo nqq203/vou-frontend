@@ -6,7 +6,7 @@ import { FaSackDollar } from "react-icons/fa6"
 import { FaHandHoldingDollar } from "react-icons/fa6"
 import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
-import AdminEditGameForm from "../AdminEditGameForm/AdminEditGameForm"
+import AdminEditAccountForm from "../AdminForm/AdminEditAccountForm"
 
 export default function AdminAccountManagement() {
   const overview = [
@@ -195,8 +195,8 @@ export default function AdminAccountManagement() {
 
   return (
     <div className='container relative p-6 mx-auto'>
-      {isOpenEditAccount && <AdminEditGameForm userInfo={userInfo} handleClose={handleCloseForm}/>}
-      <h1 className='text-[40px] header font-bold text-left'>Dashboard</h1>
+      {isOpenEditAccount && <AdminEditAccountForm userInfo={userInfo} handleClose={handleCloseForm}/>}
+      <h1 className='text-[40px] header font-bold text-left'>Account Management</h1>
       <AdminOverview overview={overview}/>
       <AdminStatistic />
       <div className='flex flex-col mt-5'>
