@@ -17,7 +17,7 @@ const Nav = (isAdmin) => {
 
 
   return (
-    <nav className="flex flex-col h-screen gap-4 pt-4 w-[250px] bg-white shadow">
+    <nav className="flex flex-col h-screen gap-4 pt-4 w-[240px] bg-white shadow">
         <Link href="/" className="flex gasidebar_icon flex-center" >
             <Image 
                 src="icons/vou_logo.svg"
@@ -36,27 +36,34 @@ const Nav = (isAdmin) => {
         </div>
 
         {/* Brands */}
-        <ul className="hidden">
-            <li className="sidebar_icon sidebar_active">
-                <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>
-                <AiFillHome size={25}/>
-                Trang chủ
-            </li>
+        <ul className="">
+            <Link href={'/brand'}>
+                <li className="sidebar_icon sidebar_active">
+                    <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>
+                    <AiFillHome size={25}/>
+                    Trang chủ
+                </li>
+            </Link>
 
-            <li className="sidebar_icon">
-                <FaRegCalendarPlus size={25} />
-                Đăng ký sự kiện
-            </li>
 
-            <li className="sidebar_icon">
-                <MdAccountBox size={25}/>
-                Tài khoản
-            </li>
+            <Link href={'/brand/event'}>
+                <li className="sidebar_icon">
+                    <FaRegCalendarPlus size={25} />
+                    Đăng ký sự kiện
+                </li>
+            </Link>
+
+            <Link href={'/brand/account'}>
+                <li className="sidebar_icon">
+                    <MdAccountBox size={25}/>
+                    Tài khoản
+                </li>
+            </Link>
 
         </ul>
 
         {/* Admin */}
-        <ul className="">
+        <ul className="hidden">
             <li className="sidebar_icon sidebar_active">
                 <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>
                 <AiFillHome size={25}/>

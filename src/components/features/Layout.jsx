@@ -9,10 +9,10 @@ import Provider from '@components/common/Provider';
 const RootLayout = ({ children }) => {
     return (
         <div className='app'>
-            <div className='fixed top-0 left-0 z-10 w-[250px] h-screen'>
+            <div className='fixed top-0 left-0 z-10 w-[240px] h-screen'>
                 <Nav />
             </div>
-            <div className='relative flex-1 pl-6 pr-6 ml-[250px] h-screen'>
+            <div className='relative flex-1 pl-6 pr-6 ml-[240px] h-screen '>
                 {children}
             </div>
         </div>

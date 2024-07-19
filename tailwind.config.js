@@ -17,13 +17,20 @@ module.exports = {
         inter: ['Inter', 'sans-serif'],
         montserrat:['Montserrat','sans-serif'], 
       },
+      fontSize: {
+        heading1: ['28px',{ fontWeight: 'bold' }],
+        heading2: ['24px',{ fontWeight: 'bold' }],
+        heading3_bold: ['20px',{ fontWeight: 'bold' }],
+        heading3_semibold: ['20px',{ fontWeight: 700 }],
+        heading3_medium: ['20px',{ fontWeight: 600 }],
+      },
       colors: {
         primary: '#EA661C',
         black: '#0F0F0F',
         white: '#FDFDFD',
-        background: 'FFFBF8',
+        background: '#FFFBF8',
         red: '#FF4C4C',    // Error
-        pending: '#56CC56', // Yellow 
+        pending: '#F1C232', // Yellow 
         active: '#56CC56',  // green 
         infoBlue: '#2196F3',   // Info
         yellow: {
