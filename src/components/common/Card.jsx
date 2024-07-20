@@ -2,7 +2,7 @@
 const Card = ({name, date, vouchers,status}) => {
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden min-w-[330px]">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden min-w-[340px]">
     {status === 'pending' ? (<div className="absolute bg-pending px-1 rounded-sm text-white">Chưa diễn ra</div>)
         : (status === 'active' ? (<div className="absolute bg-active px-1 rounded-sm text-white">Đang diễn ra</div>)
             : (<div className="absolute bg-gray-500 px-1 rounded-sm text-white">Kết thúc</div>)
@@ -11,7 +11,7 @@ const Card = ({name, date, vouchers,status}) => {
         
         <img
             className="h-[200px] w-full"
-            src="https://placehold.co/330x200"
+            src="https://placehold.co/340x200"
             alt="event image"
         />
 

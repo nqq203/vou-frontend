@@ -88,11 +88,11 @@ p,a,span,h1,h2,h3,h4,h5,h6 {
 }
 
 .primary_btn {
-  @apply rounded-full border border-primary bg-primary py-2 px-5 text-white transition-all hover:bg-orange-500 hover:border-orange-500 text-center text-lg font-montserrat flex items-center justify-center;
+  @apply rounded-full cursor-pointer border border-primary bg-primary py-2 px-5 text-white transition-all hover:bg-orange-500 hover:border-orange-500 text-center text-lg font-montserrat flex items-center justify-center;
 }
 
 .outline_btn {
-  @apply rounded-full border border-primary bg-transparent py-2 px-5 text-primary transition-all hover:bg-primary hover:text-white text-center text-lg font-montserrat flex items-center justify-center;
+  @apply rounded-full cursor-pointer border border-primary bg-transparent py-2 px-5 text-primary transition-all hover:bg-primary hover:text-white text-center text-lg font-montserrat flex items-center justify-center;
 }
 
 .head_text {
@@ -181,6 +181,7 @@ p,a,span,h1,h2,h3,h4,h5,h6 {
   padding: 10px 0 0;
 }
 
+/* Search bar */
 .form__field {
   font-family: inherit;
   width: 100%;
@@ -231,4 +232,13 @@ p,a,span,h1,h2,h3,h4,h5,h6 {
 /* reset input */
 .form__field{
   &:required,&:invalid { box-shadow:none; }
+}
+
+/* Input */
+.input_text{
+  @apply  outline-none px-3 py-2 text-base rounded-lg mt-2 border border-gray-300 bg-white focus:border-orange-300
+}
+
+.input_dropdown{
+  @apply  outline-none px-3 py-2 text-base rounded-lg mt-2 border border-gray-300 bg-white focus:border-orange-300 flex justify-between items-center hover:bg-gray-100
 }

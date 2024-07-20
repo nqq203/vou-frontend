@@ -13,7 +13,7 @@ const SearchBar = () => {
         </div>
 
         <div className="form__group field">
-            <input type="input" className="form__field" placeholder="Ten su kien" name="name" id='name' required />
+            <input type="input" className="form__field" placeholder="01/01/2024" name="date" id='date' required />
             <label className="form__label">Ngày bắt đầu</label>
         </div>
         
