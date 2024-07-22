@@ -1,5 +1,5 @@
 import React from 'react'
-import { Event } from '@components/features/Brand/Event'
+import Event from '@components/features/Brand/Event/Event'
 
 const EventPage = () => {
   return (

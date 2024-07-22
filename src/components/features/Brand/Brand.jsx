@@ -19,7 +19,7 @@ const Brand = () => {
       <div className="container flex flex-wrap gap-4 my-4">
         <Card name='Kỷ niệm sinh nhật 10 năm thành lập' date='14/6/2024 - 30/7/2024' vouchers='200' status='pending' />
         <Card name='Chào mừng ngày tựu trường' date='14/6/2024 - 30/7/2024' vouchers='300' status='active' />
-        <Card name='Black Friday - Ngày sale lớn nhất năm' date='14/6/2024 - 30/7/2024' vouchers='1000' status='active' />
+        <Card name='Black Friday - Ngày sale lớn nhất năm' date='14/6/2024 - 30/7/2024' vouchers='100000' status='active' />
         <Card name='Kỷ niệm sinh nhật 10 năm thành lập' date='14/6/2024 - 30/7/2024' vouchers='200' status='pending'/>
         <Card name='Kỷ niệm sinh nhật 10 năm thành lập' date='14/6/2024 - 30/7/2024' vouchers='200' status='done' />
         

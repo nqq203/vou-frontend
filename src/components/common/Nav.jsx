@@ -20,7 +20,7 @@ const Nav = (isAdmin) => {
     <nav className="flex flex-col h-full gap-4 pt-4 w-[240px] bg-white shadow">
         <Link href="/" className="flex gasidebar_icon flex-center" >
             <Image 
-                src="icons/vou_logo.svg"
+                src="../../icons/vou_logo.svg"
                 alt="VOU"
                 width={30}
                 height={30}

@@ -1,29 +1,35 @@
+'use client'
+import { useRouter } from "next/navigation"
+import Tag from "./Tag";
 
 const Card = ({name, date, vouchers,status}) => {
+  const {push} = useRouter();
+
+  const viewDetailEvent = () => {
+    // redirect
+    push(`/brand/event/eventDetail?id=abc&status=${status}`);
+  }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden min-w-[340px]">
-    {status === 'pending' ? (<div className="absolute bg-pending px-1 rounded-sm text-white">Chưa diễn ra</div>)
-        : (status === 'active' ? (<div className="absolute bg-active px-1 rounded-sm text-white">Đang diễn ra</div>)
-            : (<div className="absolute bg-gray-500 px-1 rounded-sm text-white">Kết thúc</div>)
-          )
-    }
-        
+    <div className="bg-white rounded-lg shadow-md overflow-hidden w-[328px] cursor-pointer hover:shadow-lg" onClick={viewDetailEvent}>
+    <div className="absolute">
+      <Tag status={status} />
+    </div>
         <img
             className="h-[200px] w-full"
-            src="https://placehold.co/340x200"
+            src="https://placehold.co/328x200"
             alt="event image"
         />
 
-        <div className="w-full flex gap-3 px-4 py-2">
-            <div className="w-[200px] gap-2 flex flex-col">
-                <h4 className="text-lg font-bold max-h-[60px] overflow-clip">{name}</h4>
+        <div className="flex w-full gap-2 px-4 py-2">
+            <div className="w-[200px] gap-2 flex grow flex-col">
+                <h5 className="text-lg font-bold max-h-[60px] overflow-clip">{name}</h5>
                 <span className="text-md text-gray-500">{date}</span>
             </div>
 
             <div className="w-[0.5px] h-[73px] bg-gray-500 "></div>
 
-            <div className="flex flex-col items-center ">
+            <div className="flex flex-1 grow flex-col items-center ">
                 <h2 className="text-primary text-heading1">{vouchers}</h2>
                 <span className="text-md text-gray-500">vouchers</span>
             </div>
