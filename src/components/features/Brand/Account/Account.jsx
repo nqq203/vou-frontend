@@ -78,7 +78,7 @@ const Account = () => {
             <div className="flex gap-4">
               <div className="flex flex-col px-2 py-2 grow">
                 <h5 className="text-base font-semibold">Tên thương hiệu</h5>
-                <input type="text" className="input_text" placeholder="Ten thuong hieu" name="brand_name" required  />
+                <input type="text" className="input_text" placeholder="Ten thuong hieu" defaultValue="" name="brand_name" required  />
               </div>
 
               <div className="flex flex-col px-2 py-1 min-w-[424px] ">
@@ -113,18 +113,18 @@ const Account = () => {
 
             <div className="flex flex-col px-2 py-2">
               <h5 className="text-base font-semibold">Địa chỉ</h5>
-              <input type="text" className="input_text" placeholder="227 Nguyễn Văn Cừ" name="address" required />
+              <input type="text" className="input_text" placeholder="227 Nguyễn Văn Cừ" defaultValue="" name="address" required />
             </div>
 
             <div className="flex gap-4">
               <div className="flex flex-col px-2 py-2 grow">
                 <h5 className="text-base font-semibold">Kinh độ</h5>
-                <input type="text" className="input_text" placeholder="23" name="log" required />
+                <input type="text" className="input_text" placeholder="23" defaultValue="" name="log" required />
               </div>
 
               <div className="flex flex-col px-2 py-2 min-w-[424px]">
                 <h5 className="text-base font-semibold">Vĩ độ</h5>
-                <input type="text" className="input_text" placeholder="100" name="lat" required />
+                <input type="text" className="input_text" placeholder="100" defaultValue="" name="lat" required />
               </div>
             </div>
 

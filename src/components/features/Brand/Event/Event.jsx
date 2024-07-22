@@ -1,9 +1,14 @@
 'use client'
 import { useState,useRef } from "react"
 import ImageUploader from "@components/common/ImageUploader";
+import CheckBox from "@components/common/CheckBox";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 
 const Event = () => {
+  //Other Brands
+  const listAvailableBrands = ['Grab','Katinat','BE','Vinfast'];
+  const [listBrands, setListBrands] = useState([])
+
   // Event
   const [banner, setBanner] = useState(null)
   const [qrImg, setQrImg] = useState(null)
@@ -22,8 +27,20 @@ const Event = () => {
   const [isEventForm, setIsEventForm] = useState(true);
   const changeForm = (state) => {
     handleFormData();
+    console.log(dataEvent)
     setIsEventForm(!state);
-    window.scrollTo(0, 0)
+    window.scrollTo(0, 0);
+  }
+
+  // Add brand collab
+  const addBrand = (brand) => {
+    let listBrandsTemp = listBrands;
+    if(!listBrandsTemp.includes(brand)){
+      listBrandsTemp.push(brand)
+    } else {
+      listBrandsTemp = listBrandsTemp.filter(item => item !== brand)
+    }
+    setListBrands(listBrandsTemp);
   }
   
   const formDataEvent = useRef(null);
@@ -32,48 +49,31 @@ const Event = () => {
   const handleFormData = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
-    if(isEventForm){
-      setDataEvent({
-        ...dataEvent,
-        eventInfo: {...formProps},
-      })
-    } else {
-      setDataEvent({
-        ...dataEvent,
-        gameInfo: {
-          gameType: {gameType},
-          ...formProps
-        },
-      })
-    }
+    setDataEvent((prevDataEvent) => ({
+      ...prevDataEvent,
+      [isEventForm ? 'eventInfo' : 'gameInfo']: { ...formProps },
+    }));
   }
 
   const sendData = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
-    let data = {};
-    if(isEventForm){
-      data = {
-        ...dataEvent,
-        eventInfo: {...formProps},
-        bannerFile: {banner},
-        QRImage: {qrImg},
-        voucherImg: {voucherImg},
-      }
-    } else {
-      data = {
-        ...dataEvent,
-        gameInfo: {
-          gameType: {gameType},
-          ...formProps
-        },
-        bannerFile: {banner},
-        QRImage: {qrImg},
-        voucherImg: {voucherImg},
-      }
-    }
+    const data = {
+      ...dataEvent,
+      [isEventForm ? 'eventInfo' : 'gameInfo']: {
+        ...formProps,
+        ...(isEventForm ? {} : { gameType }),
+      },
+      bannerFile: banner,
+      QRImage: qrImg,
+      voucherImg: voucherImg,
+      listBrands: listBrands,
+    };
+
     setDataEvent(data);
     console.log(data);
+
+    // delete form data
   }
 
   return(
@@ -90,13 +90,13 @@ const Event = () => {
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên sự kiện</h5>
                   <input type="text" className="input_text" placeholder="Tên" 
-                    name="event_name" value={dataEvent.eventInfo.event_name } defaultValue=""  required  />
+                    name="event_name" defaultValue={dataEvent.eventInfo.event_name }    required  />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Số lượng vouchers</h5>
                   <input type="number" className="input_text" placeholder="100"
-                    name="numOfVouchers" value={dataEvent.eventInfo.numOfVouchers } defaultValue=""  required  />
+                    name="numOfVouchers" defaultValue={dataEvent.eventInfo.numOfVouchers}  required  />
                 </div> 
   
               </div>
@@ -105,13 +105,13 @@ const Event = () => {
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày bắt đầu</h5>
                   <input type="text" className="input_text" placeholder="dd/mm/yyyy" 
-                    name="startDay" value={dataEvent.eventInfo.startDay } defaultValue=""  required  />
+                    name="startDay" defaultValue={dataEvent.eventInfo.startDay }    required  />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày kết thúc</h5>
                   <input type="text" className="input_text" placeholder="dd/mm/yyyy" 
-                    name="endDay" value={dataEvent.eventInfo.startDay } defaultValue=""  required />
+                    name="endDay" defaultValue={dataEvent.eventInfo.startDay }    required />
                 </div>
               </div>
   
@@ -123,8 +123,13 @@ const Event = () => {
   
               <div className="flex flex-col px-2 py-2">
                 <h5 className="text-base font-semibold">Hợp tác với brand khác (Nếu có)</h5>
-                <input type="text" className="input_text" placeholder="dd/mm/yyyy" 
-                  name="listOtherBrands" required />
+                <div className="flex gap-4 mt-2">
+                  {listAvailableBrands.map((brand,index) => (
+                    <CheckBox key={index} label={brand} 
+                      checked={listBrands.includes(brand)} onClick={() => addBrand(brand)}
+                    />
+                  ))}
+                </div>
               </div>
   
   
@@ -134,26 +139,26 @@ const Event = () => {
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Mã voucher</h5>
                   <input type="text" className="input_text" placeholder="XXXXXX" 
-                    name="voucher_code" value={dataEvent.eventInfo.voucher_code } defaultValue=""  required  />
+                    name="voucher_code" defaultValue={dataEvent.eventInfo.voucher_code }    required  />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Trị giá</h5>
                   <input type="number" className="input_text" placeholder="100000VNĐ" 
-                    name="voucher_price" value={dataEvent.eventInfo.voucher_price } defaultValue=""  required  />
+                    name="voucher_price" defaultValue={dataEvent.eventInfo.voucher_price }    required  />
                 </div> 
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày hết hạn</h5>
                   <input type="text" className="input_text" placeholder="dd/mm/yyyy" 
-                    name="voucher_expired" value={dataEvent.eventInfo.voucher_expired } defaultValue=""  required  />
+                    name="voucher_expired" defaultValue={dataEvent.eventInfo.voucher_expired }    required  />
                 </div> 
               </div>
   
               <div className="flex flex-col px-2 py-2 h-[200px]">
                 <h5 className="text-base font-semibold">Mô tả</h5>
                 <textarea type="text" className="input_text h-full" placeholder="Mô tả ngắn gọn về cách sử dụng voucher"
-                  name="voucher_description" value={dataEvent.eventInfo.voucher_description } defaultValue=""  required />
+                  name="voucher_description" defaultValue={dataEvent.eventInfo.voucher_description }   required />
               </div>
   
               {/* QR Code image */}
@@ -188,8 +193,9 @@ const Event = () => {
                     {openCategory ? 
                     (
                         <div 
-                        className="absolute z-10 mt-[88px] w-[400px] origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" 
-                        role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+                          className="absolute z-10 mt-[88px] w-[400px] origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" 
+                          role="menu" aria-orientation="vertical" aria-labelledby="menu-button"
+                        >
                         <div className="py-1 " role="none">
                             {listGames.map((item) => (
                             <a href="#" key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
@@ -208,8 +214,8 @@ const Event = () => {
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên trò chơi</h5>
-                  <input type="text" className="input_text" placeholder="Tên tro choi"
-                    name="game_name" value={dataEvent.gameInfo.game_name } defaultValue=""  required  />
+                  <input type="text" className="input_text" placeholder="Ten tro choi"
+                    name="game_name" defaultValue={dataEvent.gameInfo.game_name }    required  />
                 </div> 
                 
                  
@@ -226,7 +232,7 @@ const Event = () => {
                             className="input_text"
                             placeholder="Tên"
                             name={`question${i + 1}`}
-                            value={dataEvent.gameInfo[`question${i + 1}`] } defaultValue="" 
+                            defaultValue={dataEvent.gameInfo[`question${i + 1}`] }   
                             required
                         />
 
@@ -234,19 +240,19 @@ const Event = () => {
                             <div className="flex flex-col px-2 py-2 grow">
                             <h5 className="text-base font-medium">Đáp án</h5>
                             <input type="text" className="input_text" placeholder="Câu trả lời" 
-                              name={`${i + 1}_answer_1`} value={dataEvent.gameInfo[`${i + 1}_answer_1`] } defaultValue=""  required  />
+                              name={`${i + 1}_answer_1`} defaultValue={dataEvent.gameInfo[`${i + 1}_answer_1`] }    required  />
                             </div>
             
                             <div className="flex flex-col px-2 py-2 grow">
                             <h5 className="text-base font-medium">Trả lời 1</h5>
                             <input type="text" className="input_text" placeholder="Câu trả lời" 
-                              name={`${i + 1}_answer_2`} value={dataEvent.gameInfo[`${i + 1}_answer_2`] } defaultValue=""  required  />
+                              name={`${i + 1}_answer_2`} defaultValue={dataEvent.gameInfo[`${i + 1}_answer_2`] }    required  />
                             </div> 
             
                             <div className="flex flex-col px-2 py-2 grow">
                             <h5 className="text-base font-medium">Trả lời 2</h5>
                             <input type="text" className="input_text" placeholder="Câu trả lời" 
-                              name={`${i + 1}_answer_3`} value={dataEvent.gameInfo[`${i + 1}_answer_3`] } defaultValue=""  required  />
+                              name={`${i + 1}_answer_3`} defaultValue={dataEvent.gameInfo[`${i + 1}_answer_3`] }    required  />
                             </div> 
                         </div>
                     </div>
@@ -256,7 +262,7 @@ const Event = () => {
                   <h5 className="text-base font-semibold">Chọn số lượng vật phẩm</h5>
                   <span className="text-medium font-light italic tex-gray-700">Hệ thống sẽ random các vật phẩm theo số lượng yêu cầu</span>
                   <input type="number" className="input_text" placeholder="3" 
-                    name="numOfItems" value={dataEvent.gameInfo.numOfItems } defaultValue=""  required  />
+                    name="numOfItems" defaultValue={dataEvent.gameInfo.numOfItems }    required  />
                 </div> 
               )}
 

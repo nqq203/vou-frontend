@@ -16,7 +16,7 @@ const SignUpPage = () => {
   return (
     <div className='w-screen h-screen bg-[url("/images/bgSignIn.png")] flex flex-center'>
         <div className='container flex flex-col justify-center align-middle 
-            w-[620px] p-8 gap-8 rounded-[24px] bg-white shadow-lg'
+            w-[540px] p-8 gap-8 rounded-[24px] bg-white shadow-lg'
         >
             <div className='flex flex-col gap-3'>
                 <Link href="/" className="flex gasidebar_icon flex-center" >
@@ -29,7 +29,7 @@ const SignUpPage = () => {
                     />
                     <p className="logo_text">VOU</p>
                 </Link>
-                <h2 className=' text-[24px] text-center text-semibold'>Create an account</h2>
+                <h2 className='text-[28px] text-center'>Create an account</h2>
             </div>
 
             <div className='flex flex-col gap-3'>

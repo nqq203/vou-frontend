@@ -247,3 +247,5 @@ p,a,span,h1,h2,h3,h4,h5,h6 {
 .input_dropdown{
   @apply  outline-none px-3 py-2 text-base rounded-lg mt-2 border border-gray-300 bg-white focus:border-orange-300 flex justify-between items-center hover:bg-gray-100
 }
+
+

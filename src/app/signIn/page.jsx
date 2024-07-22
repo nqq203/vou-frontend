@@ -28,7 +28,7 @@ const LoginPage = () => {
   return (
     <div className='w-screen h-screen bg-[url("/images/bgSignIn.png")] flex flex-center'>
         <div className='container flex flex-col justify-center align-middle 
-            w-[620px] p-8 gap-8 rounded-[24px] bg-white shadow-lg'
+            w-[540px] p-8 gap-8 rounded-[24px] bg-white shadow-lg'
         >
             <div className='flex flex-col gap-3'>
                 <Link href="/" className="flex gasidebar_icon flex-center" >
@@ -41,7 +41,7 @@ const LoginPage = () => {
                     />
                     <p className="logo_text">VOU</p>
                 </Link>
-                <h2 className=' text-[24px] text-center text-semibold'>Create wonderful events with us</h2>
+                <h2 className='text-[28px] text-center'>Create wonderful events with us</h2>
             </div>
             
             <div className='flex flex-col gap-3'>
@@ -66,7 +66,7 @@ const LoginPage = () => {
             </div>
 
             <button className='rounded-full border border-gray-500 py-2 px-5 text-center text-lg hover:bg-gray-100
-                font-montserrat flex items-center justify-center'
+                font-montserrat font-medium flex items-center justify-center'
             >
                 <FcGoogle size={24} className='mr-3'></FcGoogle>
                 Continue with Google
