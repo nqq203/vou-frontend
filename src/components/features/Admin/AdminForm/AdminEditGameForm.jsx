@@ -26,7 +26,7 @@ export default function AdminEditGameForm({gameInfo, handleClose}) {
         >
           <IoMdClose size={24} />
         </button>
-        <form onSubmit={handleSubmit} className="container ml-4 mr-4">
+        <form onSubmit={handleSubmit} className="ml-4 mr-4">
           <div className="mb-4">
             <div className="border-b border-gray-200">
               <nav className="-mb-px flex space-x-8" aria-label="Tabs">
