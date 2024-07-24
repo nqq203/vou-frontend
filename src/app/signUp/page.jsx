@@ -13,6 +13,21 @@ const SignUpPage = () => {
     phone: '',
   });
 
+    const setInfo = (e) => {
+        setAccount((prev) => {
+                return {
+                    ...prev,
+                    [e.target.name]: e.target.value,
+                }
+            }
+        )
+    }
+
+    const submitHandler = async (e) => {
+        console.log("Submit: ", account);
+    }
+
+
   return (
     <div className='w-screen h-screen bg-[url("/images/bgSignIn.png")] flex flex-center'>
         <div className='container flex flex-col justify-center align-middle 
@@ -35,12 +50,12 @@ const SignUpPage = () => {
             <div className='flex flex-col gap-3'>
                 <div className="container flex flex-col">
                     <span className='text-sm mb-1'>Username</span>
-                    <input placeholder='username' name='username' type='text' className='search_input'></input>
+                    <input placeholder='username' name='username' type='text' className='search_input'onChange={setInfo} ></input>
                 </div>
 
                 <div className="container flex flex-col">
                     <span className='text-sm mb-1'>Password</span>
-                    <input placeholder='12345' name='password' type='password' className='search_input'></input>
+                    <input placeholder='12345' name='password' type='password' className='search_input'onChange={setInfo} ></input>
                     <span className="text-xs text-gray-500 ">
                         Use 8 or more characters including upper and lower case letters, number, symbol (e.g. !@#$)
                     </span>
@@ -49,17 +64,17 @@ const SignUpPage = () => {
 
                 <div className="container flex flex-col">
                     <span className='text-sm mb-1'>Email</span>
-                    <input placeholder='email@gmail.com' name='email' type='email' className='search_input'></input>
+                    <input placeholder='email@gmail.com' name='email' type='email' className='search_input'onChange={setInfo} ></input>
                 </div>
 
                 <div className="container flex flex-col">
                     <span className='text-sm mb-1'>Phone</span>
-                    <input placeholder='096100200' name='phone' type='phone' className='search_input'></input>
+                    <input placeholder='096100200' name='phone' type='phone' className='search_input'onChange={setInfo} ></input>
                 </div>
 
                 <span className="text-sm text-gray-500 text-center">By creating an account, you agree to the Terms of use and Privacy Policy</span>
 
-                <button className='primary_btn'>Sign Up</button>
+                <button className='primary_btn' onClick={submitHandler}>Sign Up</button>
             </div>
 
             <span className='text-sm text-center'>

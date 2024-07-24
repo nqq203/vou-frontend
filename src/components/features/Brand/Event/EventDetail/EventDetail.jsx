@@ -2,6 +2,9 @@
 import { useState,useRef, useEffect } from "react"
 import { useRouter } from "next/navigation";    
 import { useSearchParams } from "next/navigation";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
 
 import ImageUploader from "@components/common/ImageUploader";
 import Tag from "@components/common/Tag";
@@ -16,7 +19,6 @@ const EventDetail = () => {
   const status = searchParams.get('status') || 'pending';
 //   console.log(id)
 
-  // Brands
   //Other Brands
   const listAvailableBrands = ['Grab','Katinat','BE','Vinfast'];
   const [listBrands, setListBrands] = useState(['Grab','Katinat'])
@@ -25,11 +27,17 @@ const EventDetail = () => {
   const [banner, setBanner] = useState(null)
   const [qrImg, setQrImg] = useState(null)
   const [voucherImg, setvoucherImg] = useState(null)
+  const [numOfVouchers, setNumOfVouchers] = useState(undefined);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [expiredDay, setExpiredDay] = useState(null);
   
   // Game 
   const listGames = ['Quizz','Lắc xu']
   const [openCategory, setOpenCategory] = useState(false)
   const [gameType, setgameType] = useState(listGames[0])
+  const [gameName, setGameName] = useState("");
+
   
   const changeCategory = (state) => {
     if(status !== 'done'){
@@ -42,8 +50,7 @@ const EventDetail = () => {
   const changeForm = (state) => {
     handleFormData();
     setIsEventForm(!state);
-    window.scrollTo(0, 0)
-    console.log(status);
+    window.scrollTo(0, 0);
   }
 
   // Add brand collab
@@ -69,14 +76,24 @@ const EventDetail = () => {
     }));
   }
 
+  const formatDate = (date) => {
+    return format(date,'dd/MM/yyyy');
+  }
+
   const sendData = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
     const data = {
       ...dataEvent,
-      [isEventForm ? 'eventInfo' : 'gameInfo']: {
+      'eventInfo': {
+        ...dataEvent.eventInfo,
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate),
+        expiredDay: formatDate(expiredDay),
+      },
+      'gameInfo': {
         ...formProps,
-        ...(isEventForm ? {} : { gameType }),
+        ...{gameType},
       },
       bannerFile: banner,
       QRImage: qrImg,
@@ -88,6 +105,8 @@ const EventDetail = () => {
     console.log(data);
 
     // delete form data
+    push('/brand');
+
   }
 
   // routing to dashboard & home
@@ -97,6 +116,10 @@ const EventDetail = () => {
   }
   const goBackToHomepage = () => {
     push('/brand');
+  }
+
+  const preventSubmit = (e) => {
+    e.preventDefault();
   }
 
   return(
@@ -113,7 +136,7 @@ const EventDetail = () => {
             <Tag status={status} />
             <div className="primary_btn_small" onClick={toDashboard}>Xem báo cáo</div>
         </div>
-        <form className="container" ref={formDataEvent}>    
+        <form className="container" ref={formDataEvent} onSubmit={(e) => preventSubmit(e)}>    
               {/* Sự kiện và vouchers */}
           {isEventForm ? (
             <div>
@@ -128,7 +151,7 @@ const EventDetail = () => {
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Số lượng vouchers</h5>
                   <input  disabled={status === 'done'} type="number" className="input_text" placeholder="100"
-                    name="numOfVouchers" defaultValue={dataEvent.eventInfo.numOfVouchers }   required  />
+                    name="num_of_vouchers" value={numOfVouchers || ''} onChange={(e) => setNumOfVouchers(e.target.value)} required  />
                 </div> 
   
               </div>
@@ -136,14 +159,14 @@ const EventDetail = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày bắt đầu</h5>
-                  <input  disabled={status === 'done'} type="text" className="input_text" placeholder="dd/mm/yyyy" 
-                    name="startDay" defaultValue={dataEvent.eventInfo.startDay }   required  />
+                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
+                    selected={startDate} minDate={new Date()}  onChange={(date) => setStartDate(date)}   />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày kết thúc</h5>
-                  <input  disabled={status === 'done'} type="text" className="input_text" placeholder="dd/mm/yyyy" 
-                    name="endDay" defaultValue={dataEvent.eventInfo.startDay }   required />
+                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy" 
+                    selected={endDate} minDate={new Date()} onChange={(date) => setEndDate(date)}  />
                 </div>
               </div>
   
@@ -184,8 +207,8 @@ const EventDetail = () => {
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày hết hạn</h5>
-                  <input  disabled={status === 'done'} type="text" className="input_text" placeholder="dd/mm/yyyy" 
-                    name="voucher_expired" defaultValue={dataEvent.eventInfo.voucher_expired }   required  />
+                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
+                    selected={expiredDay} minDate={new Date()}  onChange={(date) => setExpiredDay(date)}   />
                 </div> 
               </div>
   
@@ -229,15 +252,15 @@ const EventDetail = () => {
                         <div 
                         className="absolute z-10 mt-[88px] w-[400px] origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" 
                         role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
-                        <div className="py-1 " role="none">
-                            {listGames.map((item) => (
-                            <a href="#" key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
-                                role="menuitem" value={item} onClick={(e) => {setgameType(e.target.textContent); setOpenCategory(false);}}
-                            > 
-                                {item}
-                            </a>
-                            ))}
-                        </div>
+                          <ul className="py-1 " role="none">
+                              {listGames.map((item) => (
+                              <li key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
+                                  role="menuitem" value={item} onClick={(e) => {setgameType(e.target.textContent); setOpenCategory(false);}}
+                              > 
+                                  {item}
+                              </li>
+                              ))}
+                          </ul>
                         </div>
                     )
                     : <></>
@@ -247,10 +270,9 @@ const EventDetail = () => {
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên trò chơi</h5>
-                  <input  disabled={status === 'done'} type="text" className="input_text" placeholder="Tên tro choi"
-                    name="game_name" defaultValue={dataEvent.gameInfo.game_name }   required  />
-                </div> 
-                
+                  <input  disabled={status === 'done'} type="text" className="input_text" placeholder="Ten tro choi"
+                    name="game_name" value={gameName || ''} onChange={(e) => setGameName(e.target.value)}    required  />
+                </div>                 
                  
               </div>
   
@@ -295,7 +317,7 @@ const EventDetail = () => {
                   <h5 className="text-base font-semibold">Chọn số lượng vật phẩm</h5>
                   <span className="text-medium font-light italic tex-gray-700">Hệ thống sẽ random các vật phẩm theo số lượng yêu cầu</span>
                   <input  disabled={status === 'done'} type="number" className="input_text" placeholder="3" 
-                    name="numOfItems" defaultValue={dataEvent.gameInfo.numOfItems }   required  />
+                    name="num_of_items" defaultValue={dataEvent.gameInfo.num_of_items }   required  />
                 </div> 
               )}
 
