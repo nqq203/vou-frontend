@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef} from "react";
 import { MdOutlineArrowDropDown } from "react-icons/md";
+import Notification from "@components/common/Notification";
 
 const Account = () => {
   const listCategory = ['Đồ ăn', 'Vận chuyển', 'Mỹ phẩm', 'Thức uống']
@@ -9,6 +10,7 @@ const Account = () => {
   const [accountState, setAccountState] = useState(listStates[0])
   const [openCategory, setOpenCategory] = useState(false)
   const [openStates, setOpenStates] = useState(false)
+  const [showNoti, setShowNoti] = useState(false)
 
   const [avatar, setAvatar] = useState("https://images.unsplash.com/photo-1531316282956-d38457be0993?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80")
   const hiddenFileInput = useRef(null);
@@ -45,13 +47,22 @@ const Account = () => {
     const formData = new FormData(formAccount.current);
     const formProps = Object.fromEntries(formData);
     console.log(formProps)
-    console.log("category: ", category);
-    console.log("status: ", accountState);
-    console.log("avatar: ", avatar); // not yet 
+    // console.log("category: ", category);
+    // console.log("status: ", accountState);
+    // console.log("avatar: ", avatar); // not yet 
+
+    setShowNoti(true);
+  }
+
+  const closeNoti = () => {
+    setShowNoti(false)
   }
 
   return (
     <div className='container w-full my-4'>
+      <div className={`${showNoti ? '' : 'hidden'} absolute container w-screen h-screen bg-gray-50 bg-opacity-50` }>
+        <Notification type={'success'} title={'Thành công'} content={'Thông tin đã được cập nhật'} close={closeNoti}/>
+      </div>
       <h1 className='text-heading1 font-bold text-primary'>Thông tin thương hiệu</h1>
 
       <div className='container flex bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
@@ -74,7 +85,7 @@ const Account = () => {
           <span className="text-base font-semibold text-primary cursor-pointer hover:underline" onClick={handleClick} >Edit</span>
         </div>
 
-        <form id='form-account' ref={formAccount} className="container" >
+        <form id='form-account' ref={formAccount} className="container" onSubmit={(e) => {e.preventDefault()}} >
             <div className="flex gap-4">
               <div className="flex flex-col px-2 py-2 grow">
                 <h5 className="text-base font-semibold">Tên thương hiệu</h5>

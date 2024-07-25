@@ -75,6 +75,15 @@ module.exports = {
           900: '#622b0c',
         },
       },
+      keyframes: {
+        bottom_to_mid: {
+          '0%': { top: '0', opacity: '0.5' },
+          '100%': { top: '1/3', opacity: '1' },
+        },
+      },
+      animation: {
+        bottom_to_mid: 'bottom_to_mid 0.3s ease',
+      },
     },
   },
   plugins: [],

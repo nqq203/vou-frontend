@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import ImageUploader from "@components/common/ImageUploader";
 import CheckBox from "@components/common/CheckBox";
 import { MdOutlineArrowDropDown } from "react-icons/md";
+import Notification from "@components/common/Notification";
 
 const Event = () => {
   const {push} = useRouter();
@@ -55,6 +56,8 @@ const Event = () => {
   
   const formDataEvent = useRef(null);
   const [dataEvent, setDataEvent] = useState({eventInfo: {}, gameInfo: {}});
+  const [showNoti, setShowNoti] = useState(false)
+
 
   const handleFormData = () => {
     const formData = new FormData(formDataEvent.current);
@@ -67,7 +70,10 @@ const Event = () => {
   }
 
   const formatDate = (date) => {
-    return format(date,'dd/MM/yyyy');
+    if(date){
+      return format(date,'dd/MM/yyyy')
+    } 
+    return "";
   }
 
   const sendData = () => {
@@ -95,15 +101,24 @@ const Event = () => {
     console.log(data);
 
     // delete form data
-    push('/brand');
+    formDataEvent.current.reset();
+    setShowNoti(true);
   }
 
   const preventSubmit = (e) => {
     e.preventDefault();
   }
 
+  const closeNoti = () => {
+    setShowNoti(false)
+  }
+
+
   return(
     <div className='container w-full my-4'>
+      <div className={`${showNoti ? '' : 'hidden'} absolute container w-screen h-screen bg-gray-50 bg-opacity-50` }>
+        <Notification type={'success'} title={'Thành công'} content={'Thông tin đã được cập nhật'} close={closeNoti}/>
+      </div>
       <h1 className='text-heading1 font-bold text-primary'>Đăng ký sự kiện</h1>
 
       <div className='container flex bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>

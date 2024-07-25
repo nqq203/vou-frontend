@@ -11,7 +11,7 @@ import Tag from "@components/common/Tag";
 import CheckBox from "@components/common/CheckBox";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { IoChevronBackCircle } from "react-icons/io5";
-
+import Notification from "@components/common/Notification";
 
 const EventDetail = () => {
   const searchParams = useSearchParams();
@@ -66,6 +66,8 @@ const EventDetail = () => {
   
   const formDataEvent = useRef(null);
   const [dataEvent, setDataEvent] = useState({eventInfo: {}, gameInfo: {}});
+  const [showNoti, setShowNoti] = useState(false)
+
 
   const handleFormData = () => {
     const formData = new FormData(formDataEvent.current);
@@ -77,7 +79,10 @@ const EventDetail = () => {
   }
 
   const formatDate = (date) => {
-    return format(date,'dd/MM/yyyy');
+    if(date){
+      return format(date,'dd/MM/yyyy')
+    } 
+    return "";
   }
 
   const sendData = () => {
@@ -105,8 +110,12 @@ const EventDetail = () => {
     console.log(data);
 
     // delete form data
-    push('/brand');
+    setShowNoti(true);
 
+  }
+
+  const closeNoti = () => {
+    setShowNoti(false)
   }
 
   // routing to dashboard & home
@@ -124,6 +133,9 @@ const EventDetail = () => {
 
   return(
     <div className='container w-full my-4'>
+      <div className={`${showNoti ? '' : 'hidden'} absolute container w-screen h-screen bg-gray-50 bg-opacity-50` }>
+        <Notification type={'success'} title={'Thành công'} content={'Thông tin đã được cập nhật'} close={closeNoti}/>
+      </div>
       <div className="flex gap-2 items-center">
         <div className="text-primary p-2 cursor-pointer" onClick={goBackToHomepage}>
           <IoChevronBackCircle size={40} />

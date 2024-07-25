@@ -1,10 +1,16 @@
-import React from 'react'
+'use client'
+import { IoClose } from "react-icons/io5";
+import { useRef } from 'react';
 
-const Notification = ({type,title,content}) => {
+const Notification = ({type,title,content,close,...props}) => {
+  const notiContainer = useRef();
+
   return (
-    <div >
-        <div>
+    <div ref={notiContainer} className={`animate-bottom_to_mid fixed min-w-[350px] top-1/3
+      right-1/4 ${type === 'success' ? 'bg-active' : 'bg-red'}  text-white p-4 shadow-md rounded-sm'`} {...props}>
+        <div className='flex justify-between text-heading3_semibold mb-2'>
             {title}
+          <IoClose size={28} className="cursor-pointer hover:opacity-75"  onClick={close}/>
         </div>
 
         <p>{content}</p>
