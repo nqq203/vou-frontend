@@ -1,6 +1,6 @@
 import AdminOverview from "../AdminOverview/AdminOverview"
 import AdminStatistic from "../AdminStatistic/AdminStatistic"
-import SearchBar from "@components/common/SearchBar"
+import SearchBarAccount from "@components/common/SearchBarAccount"
 import Table from "@components/common/Table"
 import { FaSackDollar } from "react-icons/fa6"
 import { FaHandHoldingDollar } from "react-icons/fa6"
@@ -200,7 +200,7 @@ export default function AdminAccountManagement() {
       <AdminOverview overview={overview}/>
       <AdminStatistic />
       <div className='flex flex-col mt-5'>
-        <SearchBar />
+        <SearchBarAccount />
         <Table head={header} rows={newRows} isEditTable={true} scrollViewStyle={scrollViewStyle} setInfo={setUserInfo} handleOpenForm={handleOpenForm}/>
       </div>
     </div>

@@ -83,7 +83,7 @@ export default function AdminEditAccountForm({ userInfo, handleClose }) {
               </label>
             </div>
           </div>
-          <button type="submit" className="btn mt-10 bg-primary rounded-[12px] pt-2 pb-2 pr-3 pl-3 font-bold text-white w-[200px] mt-10" onClick={handleSaveChange}>Chỉnh sửa</button>
+          <button type="submit" className="btn bg-primary rounded-[12px] pt-2 pb-2 pr-3 pl-3 font-bold text-white w-[200px] mt-10" onClick={handleSaveChange}>Chỉnh sửa</button>
         </form>
       </div>
     </div>

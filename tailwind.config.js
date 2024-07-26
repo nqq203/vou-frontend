@@ -17,6 +17,13 @@ module.exports = {
         inter: ['Inter', 'sans-serif'],
         montserrat:['Montserrat','sans-serif'], 
       },
+      fontSize: {
+        heading1: ['28px',{ fontWeight: 'bold' }],
+        heading2: ['24px',{ fontWeight: 'bold' }],
+        heading3_bold: ['20px',{ fontWeight: 'bold' }],
+        heading3_semibold: ['20px',{ fontWeight: 700 }],
+        heading3_medium: ['20px',{ fontWeight: 600 }],
+      },
       colors: {
         primary: '#EA661C',
         black: '#0F0F0F',
@@ -67,6 +74,15 @@ module.exports = {
           800: '#81380f',
           900: '#622b0c',
         },
+      },
+      keyframes: {
+        bottom_to_mid: {
+          '0%': { top: '0', opacity: '0.5' },
+          '100%': { top: '1/3', opacity: '1' },
+        },
+      },
+      animation: {
+        bottom_to_mid: 'bottom_to_mid 0.3s ease',
       },
     },
   },
