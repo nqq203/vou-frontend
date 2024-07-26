@@ -20,7 +20,7 @@ const Nav = (isAdmin) => {
     <nav className="flex flex-col h-screen gap-4 pt-4 w-[250px] bg-white shadow">
         <Link href="/" className="flex gasidebar_icon flex-center" >
             <Image 
-                src="icons/vou_logo.svg"
+                src="/icons/vou_logo.svg"
                 alt="VOU"
                 width={30}
                 height={30}
@@ -57,26 +57,35 @@ const Nav = (isAdmin) => {
 
         {/* Admin */}
         <ul className="">
-            <li className="sidebar_icon sidebar_active">
-                <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>
-                <AiFillHome size={25}/>
-                Trang chủ
-            </li>
+            <Link href="/admin">
+                <li className="sidebar_icon sidebar_active">
+                    <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>
+                    <AiFillHome size={25}/>
+                    Trang chủ
+                </li>
+            </Link>
 
-            <li className="sidebar_icon">
-                <MdSupervisorAccount size={25}/>
-                Quản lí tài khoản
-            </li>
+            <Link href="/admin/accounts">
+                <li className="sidebar_icon">
+                        <MdSupervisorAccount size={25}/>
+                        Quản lí tài khoản
+                </li>
+            </Link>
 
-            <li className="sidebar_icon">
-                <MdEvent size={25}/>
-                Quản lí sự kiện
-            </li>
 
-            <li className="sidebar_icon">
-                <FaGamepad size={25}/>
-                Quản lí trò chơi
-            </li>
+            <Link href="/admin/events">
+                <li className="sidebar_icon">
+                    <MdEvent size={25}/>
+                    Quản lí sự kiện
+                </li>
+            </Link>
+
+            <Link href="/admin/games">
+                <li className="sidebar_icon">
+                    <FaGamepad size={25}/>
+                    Quản lí trò chơi
+                </li>
+            </Link>
 
             <li className="sidebar_icon">
                 <MdAccountBox size={25}/>

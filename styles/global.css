@@ -21,7 +21,6 @@ p,a,span,h1,h2,h3,h4,h5,h6 {
   justify-content: center;
   padding: 120px 24px 160px 24px;
   pointer-events: none;
-  background-color: #FFFBF8;
 }
 
 /* .main:before {
@@ -80,7 +79,7 @@ p,a,span,h1,h2,h3,h4,h5,h6 {
 /* Tailwind Styles */
 
 .app {
-  @apply relative z-10 flex justify-center items-center flex-row;
+  @apply z-10 flex justify-center items-center flex-row;
 }
 
 .global_padding{
@@ -185,4 +184,26 @@ p,a,span,h1,h2,h3,h4,h5,h6 {
 
 .flex-between {
   @apply flex justify-between items-center;
+}
+
+/* Custom scroll view */
+.scroll-view {
+  overflow-y: auto;
+}
+
+/* Custom scrollbar styles */
+.scroll-view::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-view::-webkit-scrollbar-track {
+  @apply bg-white
+}
+
+.scroll-view::-webkit-scrollbar-thumb {
+  @apply bg-brown-400 rounded-[10px] border-2
+}
+
+.scroll-view::-webkit-scrollbar-thumb:hover {
+  @apply bg-brown-500
 }

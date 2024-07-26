@@ -1,15 +1,10 @@
-import React from 'react'
 
-const Notification = ({type,title,content}) => {
+export default function Notification({ isSuccess }) {
   return (
-    <div >
-        <div>
-            {title}
-        </div>
-
-        <p>{content}</p>
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+      <div className="relative bg-white p-5 rounded-lg shadow-lg w-full max-w-xs h-auto mx-4">
+        
+      </div>
     </div>
   )
 }
-
-export default Notification

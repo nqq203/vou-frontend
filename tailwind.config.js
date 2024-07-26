@@ -21,9 +21,9 @@ module.exports = {
         primary: '#EA661C',
         black: '#0F0F0F',
         white: '#FDFDFD',
-        background: 'FFFBF8',
+        background: '#FFFBF8',
         red: '#FF4C4C',    // Error
-        pending: '#56CC56', // Yellow 
+        pending: '#F1C232', // Yellow 
         active: '#56CC56',  // green 
         infoBlue: '#2196F3',   // Info
         yellow: {
