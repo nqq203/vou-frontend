@@ -4,6 +4,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        <link rel="icon" href="../../../icons/vou_logo.svg" sizes='any'/>
       </Head>
       <body className='bg-background'>
         <Main />

@@ -6,8 +6,8 @@ import Notification from "@components/common/Notification";
 const Account = () => {
   const listCategory = ['Đồ ăn', 'Vận chuyển', 'Mỹ phẩm', 'Thức uống']
   const listStates = ['Active', 'InActive', 'Pending']
-  const [category, setCategory] = useState(listCategory[0]);
-  const [accountState, setAccountState] = useState(listStates[0])
+  const [field, setField] = useState(listCategory[0]);
+  const [status, setStatus] = useState(listStates[0])
   const [openCategory, setOpenCategory] = useState(false)
   const [openStates, setOpenStates] = useState(false)
   const [showNoti, setShowNoti] = useState(false)
@@ -47,8 +47,8 @@ const Account = () => {
     const formData = new FormData(formAccount.current);
     const formProps = Object.fromEntries(formData);
     console.log(formProps)
-    // console.log("category: ", category);
-    // console.log("status: ", accountState);
+    // console.log("field: ", field);
+    // console.log("status: ", status);
     // console.log("avatar: ", avatar); // not yet 
 
     setShowNoti(true);
@@ -66,7 +66,8 @@ const Account = () => {
       <h1 className='text-heading1 font-bold text-primary'>Thông tin thương hiệu</h1>
 
       <div className='container flex bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
-        <div className="flex flex-col min-w-[130px] items-center gap-4">
+        <div className="flex flex-col min-w-[150px] items-center gap-4">
+            <span className="text-heading3_bold text-primary text-center">Phúc Long</span>
             <img
               className="inline-block h-[130px] w-[130px] rounded-full ring-2 ring-white"
               width={130}
@@ -82,20 +83,20 @@ const Account = () => {
               style={{ display: "none" }}
             />
 
-          <span className="text-base font-semibold text-primary cursor-pointer hover:underline" onClick={handleClick} >Edit</span>
+          <span className="text-base font-semibold text-primary cursor-pointer hover:underline" onClick={handleClick}>Edit</span>
         </div>
 
         <form id='form-account' ref={formAccount} className="container" onSubmit={(e) => {e.preventDefault()}} >
             <div className="flex gap-4">
               <div className="flex flex-col px-2 py-2 grow">
                 <h5 className="text-base font-semibold">Tên thương hiệu</h5>
-                <input type="text" className="input_text" placeholder="Ten thuong hieu" defaultValue="" name="brand_name" required  />
+                <input type="text" className="input_text" placeholder="Ten thuong hieu" defaultValue="" name="accountName" required  />
               </div>
 
               <div className="flex flex-col px-2 py-1 min-w-[424px] ">
                 <h5 className="text-base font-semibold">Lĩnh vực</h5>
                 <div className="input_dropdown" onClick={() => changeCategory(openCategory)}>
-                  <span className='text-gray-900'>{category}</span>
+                  <span className='text-gray-900'>{field}</span>
                   <MdOutlineArrowDropDown size={28}/>
                 </div>
 
@@ -107,7 +108,7 @@ const Account = () => {
                       <div className="py-1 " role="none">
                         {listCategory.map((item) => (
                           <a href="#" key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
-                            role="menuitem" value={item} onClick={(e) => {setCategory(e.target.textContent); setOpenCategory(false);}}
+                            role="menuitem" value={item} onClick={(e) => {setField(e.target.textContent); setOpenCategory(false);}}
                           > 
                             {item}
                           </a>
@@ -130,19 +131,43 @@ const Account = () => {
             <div className="flex gap-4">
               <div className="flex flex-col px-2 py-2 grow">
                 <h5 className="text-base font-semibold">Kinh độ</h5>
-                <input type="text" className="input_text" placeholder="23" defaultValue="" name="log" required />
+                <input type="text" className="input_text" placeholder="23" defaultValue="" name="longtitude" required />
               </div>
 
               <div className="flex flex-col px-2 py-2 min-w-[424px]">
                 <h5 className="text-base font-semibold">Vĩ độ</h5>
-                <input type="text" className="input_text" placeholder="100" defaultValue="" name="lat" required />
+                <input type="text" className="input_text" placeholder="100" defaultValue="" name="latitude" required />
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex flex-col px-2 py-2 grow">
+                <h5 className="text-base font-semibold">Họ và tên</h5>
+                <input type="text" className="input_text" placeholder="Nguyễn Văn A" defaultValue="" name="fullname" required />
+              </div>
+
+              <div className="flex flex-col px-2 py-2 min-w-[424px]">
+                <h5 className="text-base font-semibold">Điện thoại</h5>
+                <input type="text" className="input_text" placeholder="+84" defaultValue="" name="phone" required />
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex flex-col px-2 py-2 grow">
+                <h5 className="text-base font-semibold">Tên đăng nhập</h5>
+                <input type="text" className="input_text" placeholder="username" defaultValue="" name="username" required />
+              </div>
+
+              <div className="flex flex-col px-2 py-2 min-w-[424px]">
+                <h5 className="text-base font-semibold">Email</h5>
+                <input type="email" className="input_text" placeholder="email@gmail.com" defaultValue="" name="email"  />
               </div>
             </div>
 
             <div className="flex flex-col px-2 py-1 w-[424px] ">
                 <h5 className="text-base font-semibold">Trạng thái</h5>
                 <div className="input_dropdown" onClick={() => changeState(openStates)}>
-                  <span className='text-gray-900'>{accountState}</span>
+                  <span className='text-gray-900'>{status}</span>
                   <MdOutlineArrowDropDown size={28}/>
                 </div>
 
@@ -154,7 +179,7 @@ const Account = () => {
                       <div className="py-1 " role="none">
                         {listStates.map((item) => (
                           <a href="#" key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
-                            role="menuitem" value={item} onClick={(e) => {setAccountState(e.target.textContent); setOpenStates(false);}}
+                            role="menuitem" value={item} onClick={(e) => {setStatus(e.target.textContent); setOpenStates(false);}}
                           > 
                             {item}
                           </a>

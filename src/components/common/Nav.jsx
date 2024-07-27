@@ -110,7 +110,7 @@ const Nav = (isAdmin) => {
                 </li>
             </Link>
 
-            <Link href="#">
+            <Link href="/admin/profile">
                 <li className="sidebar_icon" onClick={(e) => handleClick(e)}>
                     <MdAccountBox size={25}/>
                     Tài khoản

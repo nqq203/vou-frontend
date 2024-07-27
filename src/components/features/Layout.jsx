@@ -1,11 +1,6 @@
 import Nav from '@components/common/Nav';
-import Provider from '@components/common/Provider';
-import ScrollView from '@components/common/ScrollView';
+import Head from 'next/head';
 
-// export const metadata = {
-//     title: "VOU",
-//     description: "Xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu"
-// }
 
 const RootLayout = ({ children }) => {
     return (
@@ -17,7 +12,6 @@ const RootLayout = ({ children }) => {
                 {children}
             </div>
         </div>
-
     )
 }
 
