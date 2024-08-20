@@ -10,14 +10,34 @@ import { MdEvent } from "react-icons/md";
 import { FaGamepad } from "react-icons/fa6";
 import { MdAccountBox } from "react-icons/md";
 import { FaRegCalendarPlus } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 
 const Nav = (isAdmin) => {
-    const [isAuthen, setIsAuthen] = useState(false)
+    const role =  useSelector((state) => state.auth.role);
+    
+    const brandNav = useRef(null);
+    const adminNav = useRef(null);
+    
+    if(role === 'ADMIN'){
+        isAdmin = true;
+    } else {
+        isAdmin = false;
+    }
 
-  const brandNav = useRef(null);
+  useEffect(() => {
+      if(isAdmin){
+          adminNav.current.classList.remove('hidden');
+      } else {
+          brandNav.current.classList.remove('hidden');
+      }
+  },[adminNav,brandNav])
+
   const handleClick = (e) => {
-    const items = brandNav.current.children;
+    let items = brandNav.current.children;
+    if(isAdmin){
+        items = adminNav.current.children
+    }
 
         // Remove 'sidebar_active' class and the div from all items
         for (let i = 0; i < items.length; i++) {
@@ -42,7 +62,7 @@ const Nav = (isAdmin) => {
 
   return (
     <nav className="flex flex-col h-full gap-4 pt-4 w-[240px] bg-white shadow">
-        <Link href="/" className="flex gasidebar_icon flex-center" >
+        <div className="flex gasidebar_icon flex-center" >
             <Image 
                 src="../../icons/vou_logo.svg"
                 alt="VOU"
@@ -51,12 +71,6 @@ const Nav = (isAdmin) => {
                 className="object-contain mr-1"
             />
             <p className="logo_text">VOU</p>
-        </Link>
-
-        <div className="sm:flex hidden flex-center">
-            <Link href={'/signIn'} className="primary_btn">
-                Sign In
-            </Link>
         </div>
 
         {/* Brands */}
@@ -87,7 +101,7 @@ const Nav = (isAdmin) => {
         </ul>
 
         {/* Admin */}
-        <ul className="" ref={brandNav}>
+        <ul className="hidden" ref={adminNav}>
             <Link href="/admin">
                 <li className="sidebar_icon sidebar_active" onClick={(e) => handleClick(e)} >
                     <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>

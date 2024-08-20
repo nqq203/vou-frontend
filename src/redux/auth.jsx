@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
+	idUser: null,
+	role: null,
 	accessToken: null,
-	refreshToken: null,
-	expireIn: null,
+	expiresIn: null,
 };
 
 const auth = createSlice({
@@ -11,10 +12,11 @@ const auth = createSlice({
 	initialState,
 	reducers: {
 		loginSuccess(state, action) {
-			const { accessToken, refreshToken, expireIn } = action.payload;
+			const { accessToken, expiresIn, idUser, role } = action.payload;
 			state.accessToken = accessToken;
-			state.refreshToken = refreshToken;
-			state.expireIn = expireIn;
+			state.expiresIn = expiresIn;
+			state.idUser = idUser;
+			state.role = role;
 		},
 		logout(state){
 			for (const key in state) {

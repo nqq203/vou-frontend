@@ -96,7 +96,7 @@ p,a,span,h1,h2,h3,h4,h5,h6 {
 
 
 .outline_btn {
-  @apply rounded-full cursor-pointer border border-primary bg-transparent py-2 px-5 text-primary transition-all hover:bg-primary hover:text-white text-center text-lg font-montserrat flex items-center justify-center;
+  @apply rounded-full cursor-pointer border border-primary bg-white py-2 px-5 text-primary transition-all hover:bg-primary hover:text-white text-center text-lg font-montserrat flex items-center justify-center;
 }
 
 .head_text {

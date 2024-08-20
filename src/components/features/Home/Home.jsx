@@ -5,56 +5,30 @@ import React from 'react'
 
 const Home = () => {
   return (
-    <div className="w-full flex-center flex-col container">
-        <h1 className="head_text orange_gradient text-center">
-            Marketing with Real-time Games
-            <br className="max-md:hidden" />
-            <span className="orange_gradient text-center">VOU</span>
-        </h1>
-        <p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p>
+    <div className="w-screen mt-[100px] flex flex-col justify-center items-center">
+        <div className="flex-col justify-center items-center">
+          <h1 className="head_text orange_gradient text-center">
+              Marketing with Real-time Games
+              <br className="max-md:hidden" />
+              <span className="orange_gradient text-center">VOU</span>
+          </h1>
 
-        <Link href="/admin" className="primary_btn mt-5">Go to Admin</Link>
+          <div className='mx-[120px] my-[30px] text-center flex justify-center font-montserrat text-heading3_regular items-center'>
+            Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
+            Đăng ký ngay!!!
+          </div>
+        </div>
 
-        <Link href="/brand" className="primary_btn mt-5">Go to Brands</Link>
-
-        {/* <Feed className="mt-5" /> */}
-        <p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p><p className="desc text-center">
-        Bạn đang muốn xây dựng chiến dịch Viral Marketing hiệu quả cho thương hiệu của mình? Bạn muốn tạo ra chiến dịch khuyến mãi dựa trên trò chơi thu hút hàng triệu lượt tham gia như Momo với trò chơi như Sưu Tập Linh Thú và Lắc Xì, Viettelpay với trò chơi Lắc Mana.
-        Đăng ký ngay!!!
-        </p>
+        <div className="sm:flex hidden mt-4">
+            <Link href={'/signIn'} className="primary_btn w-[200px]">
+                Sign In
+            </Link>
+        </div>
+        <div className="sm:flex hidden mt-4">
+            <Link href={'/signUp'} className="outline_btn w-[200px]">
+                Sign Up
+            </Link>
+        </div>
     </div>
   )
 }

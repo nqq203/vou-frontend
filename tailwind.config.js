@@ -20,9 +20,11 @@ module.exports = {
       fontSize: {
         heading1: ['28px',{ fontWeight: 'bold' }],
         heading2: ['24px',{ fontWeight: 'bold' }],
+        heading2_medium: ['24px',{ fontWeight: 400 }],
         heading3_bold: ['20px',{ fontWeight: 'bold' }],
         heading3_semibold: ['20px',{ fontWeight: 700 }],
         heading3_medium: ['20px',{ fontWeight: 600 }],
+        heading3_regular: ['20px',{ fontWeight: 400 }],
       },
       colors: {
         primary: '#EA661C',
@@ -78,12 +80,16 @@ module.exports = {
       keyframes: {
         bottom_to_mid: {
           '0%': { top: '0', opacity: '0.5' },
+          '25%': { top: '1/12', opacity: '0.65' },
+          '50%': { top: '1/6', opacity: '0.8' },
+          '75%': { top: '1/4', opacity: '0.9' },
           '100%': { top: '1/3', opacity: '1' },
         },
       },
       animation: {
-        bottom_to_mid: 'bottom_to_mid 0.3s ease',
+        bottom_to_mid: 'bottom_to_mid 0.6s ease-in-out',
       },
+
     },
   },
   plugins: [],

@@ -4,8 +4,17 @@ import React from 'react'
 import Image from 'next/image'
 import { FcGoogle } from "react-icons/fc";
 import { useState, useEffect } from 'react';
+import { useMutation } from 'react-query';
+import { callApiSignIn } from '@pages/api/user';
+import { loginSuccess } from '@redux/auth';
+import Notification from '@components/common/Notification';
+import { useDispatch } from 'react-redux';
 
 const LoginPage = () => {
+    const dispatch = useDispatch()
+    const [showNoti, setShowNoti] = useState(false)
+    const [isError, setIsError] = useState(false);
+    const [notiMsg, setNotiMsg] = useState('')
     const [account, setAccount] = useState({
         username: '',
         password: '',
@@ -21,12 +30,70 @@ const LoginPage = () => {
         )
     }
 
+    const loginMutation = useMutation(
+        (account) => callApiSignIn(account),
+        {
+            onSuccess: (data) => {
+                console.log(data);
+                if (data.success) {        
+                    const { token, user } = data.metadata;
+                    // console.log(user);
+                    localStorage.setItem('accessToken', token);
+                    localStorage.setItem('idUser', user.idUser);
+                    localStorage.setItem('username', user.username);
+                    localStorage.setItem('fullName', user.fullName);
+                    localStorage.setItem('email', user.email);
+                    localStorage.setItem('phoneNumber', user.phoneNumber);
+                    localStorage.setItem('lockedDate', user.lockedDate);
+                    localStorage.setItem('role', user.role);
+                    localStorage.setItem('status', user.status);
+                    const userInfo = {
+                        "accessToken": token, 
+                        "expiresIn": '10h', 
+                        "idUser": user.idUser,
+                        "role": user.role, 
+                    }
+                    dispatch(loginSuccess(userInfo))
+                    
+                    if(user.role === 'BRAND') {
+                        window.location.href = "http://localhost:3000/brand";
+                    } else {
+                        window.location.href = "http://localhost:3000/admin";
+                    }
+                } else {
+                    console.log("Login failed")
+                }
+            },
+            onError: (error) => {
+                const msgErr = error.response.data.message;
+                setIsError(true);
+                setShowNoti(true);
+                setNotiMsg(msgErr);
+            }
+        }
+    )
+
     const submitHandler = async (e) => {
         console.log("Submit: ", account);
+        if(account.username === '' || account.password === ''){
+            setIsError(true);
+            setShowNoti(true);
+            setNotiMsg("Some fields are missing")
+        }
+
+        loginMutation.mutate(account);
+    }
+
+    const closeNoti = () => {
+        setShowNoti(false)
     }
 
   return (
     <div className='w-screen h-screen bg-[url("/images/bgSignIn.png")] flex flex-center'>
+        <div className={`${showNoti ? '' : 'hidden'} absolute w-screen h-screen bg-gray-50 bg-opacity-50 flex justify-center items-center` }>
+            <Notification type={`${isError ? 'error' : 'success'}` } 
+                title={`${isError ? 'Error' : 'Success'}` }  content={notiMsg} close={closeNoti}/>
+        </div>
         <div className='container flex flex-col justify-center align-middle 
             w-[540px] p-8 gap-8 rounded-[24px] bg-white shadow-lg'
         >
