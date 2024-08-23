@@ -12,19 +12,20 @@ const auth = createSlice({
 	initialState,
 	reducers: {
 		loginSuccess(state, action) {
-			const { accessToken, expiresIn, idUser, role } = action.payload;
-			state.accessToken = accessToken;
-			state.expiresIn = expiresIn;
-			state.idUser = idUser;
-			state.role = role;
+			Object.assign(state, action.payload);
 		},
+		
 		logout(state){
 			for (const key in state) {
 				state[key] = null;
 			}
+		},
+
+		updateStates(state,action) {
+			Object.assign(state, action.payload);
 		}
 	},
 });
-export const { loginSuccess, logout } = auth.actions;
+export const { loginSuccess, logout, updateStates } = auth.actions;
 
 export default auth.reducer;

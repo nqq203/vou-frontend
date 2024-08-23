@@ -40,7 +40,7 @@ const FormGame = () => {
                         role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
                         <div className="py-1 " role="none">
                             {listGames.map((item) => (
-                            <a href="#" key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
+                            <a key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
                                 role="menuitem" value={item} onClick={(e) => {setgameType(e.target.textContent); setOpenCategory(false);}}
                             > 
                                 {item}
@@ -99,6 +99,9 @@ const FormGame = () => {
                   <h5 className="text-base font-semibold">Chọn số lượng vật phẩm</h5>
                   <span className="text-medium font-light italic tex-gray-700">Hệ thống sẽ random các vật phẩm theo số lượng yêu cầu</span>
                   <input type="number" className="input_text" placeholder="3" name="numOfItems" required  />
+                  <h5 className="text-base font-semibold">Chọn số lượng xu đổi thưởng</h5>
+                  <span className="text-medium font-light italic tex-gray-700">Nếu chọn đổi xu lấy voucher thì cần biết số lượng xu để đổi</span>
+                  <input type="number" className="input_text" placeholder="3" name="aimCoins" required  />
                 </div> 
               )}
 

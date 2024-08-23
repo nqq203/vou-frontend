@@ -36,26 +36,44 @@ const LoginPage = () => {
             onSuccess: (data) => {
                 console.log(data);
                 if (data.success) {        
-                    const { token, user } = data.metadata;
-                    // console.log(user);
+                    const { token, account } = data.metadata;
+                    // console.log(account);
                     localStorage.setItem('accessToken', token);
-                    localStorage.setItem('idUser', user.idUser);
-                    localStorage.setItem('username', user.username);
-                    localStorage.setItem('fullName', user.fullName);
-                    localStorage.setItem('email', user.email);
-                    localStorage.setItem('phoneNumber', user.phoneNumber);
-                    localStorage.setItem('lockedDate', user.lockedDate);
-                    localStorage.setItem('role', user.role);
-                    localStorage.setItem('status', user.status);
+                    localStorage.setItem('idUser', account.idUser);
+                    localStorage.setItem('avatarUrl', account.avatarUrl);
+                    localStorage.setItem('username', account.username);
+                    // localStorage.setItem('fullName', account.fullName);
+                    // localStorage.setItem('email', account.email);
+                    // localStorage.setItem('phoneNumber', account.phoneNumber);
+                    // localStorage.setItem('address', account.address);
+                    // localStorage.setItem('lockedDate', account.lockedDate);
+                    // localStorage.setItem('role', account.role);
+                    // localStorage.setItem('status', account.status);
+                    // localStorage.setItem('field', account.field);
+                    // localStorage.setItem('longitude', account.longitude);
+                    // localStorage.setItem('latitude', account.latitude);
+                    
+
                     const userInfo = {
-                        "accessToken": token, 
-                        "expiresIn": '10h', 
-                        "idUser": user.idUser,
-                        "role": user.role, 
+                        accessToken: token, 
+                        idUser: account.idUser,
+                        avatarUrl: account.avatarUrl,
+                        username: account.username,
+                        fullName: account.fullName,
+                        email: account.email,
+                        phoneNumber: account.phoneNumber,
+                        address: account.address,
+                        status: account.status,
+                        lockedDate: account.lockedDate,
+                        role: account.role, 
+                        expiresIn: '10h', 
+                        field: account.field || '',
+                        longitude: account.longitude || '',
+                        latitude: account.latitude || '',
                     }
                     dispatch(loginSuccess(userInfo))
                     
-                    if(user.role === 'BRAND') {
+                    if(account.role === 'BRAND') {
                         window.location.href = "http://localhost:3000/brand";
                     } else {
                         window.location.href = "http://localhost:3000/admin";

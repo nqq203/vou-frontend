@@ -2,6 +2,7 @@ import { FaSearch } from "react-icons/fa";
 import GameItem from "@components/common/GameItem";
 import AdminEditGameForm from "../AdminForm/AdminEditGameForm";
 import { useEffect, useState } from "react";
+import TitlePage from "@components/common/TitlePage";
 
 export default function AdminGameManagement() {
   const gameList = [
@@ -39,7 +40,8 @@ export default function AdminGameManagement() {
   return (
     <div className="container p-6 mx-auto">
       {isOpenEditGame && <AdminEditGameForm gameInfo={gameInfo} handleClose={handleCloseEditGame}/>}
-      <h1 className='text-[40px] header font-bold text-left'>Game Management</h1>
+      <TitlePage title={"Quản lí trò chơi"} />
+
       <div className="flex items-center bg-white rounded-[10px] shadow-md p5">
         <FaSearch className="text-center mr-3 ml-3 text-primary cursor-pointer"/>
         <input type="text" placeholder="Tên game..." className="flex-grow border-b-2 bg-transparent mt-3 mb-3 mr-3 outline-none placeholder:font-bold"/>

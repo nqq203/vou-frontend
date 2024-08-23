@@ -9,6 +9,7 @@ import ImageUploader from "@components/common/ImageUploader";
 import CheckBox from "@components/common/CheckBox";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import Notification from "@components/common/Notification";
+import TitlePage from "@components/common/TitlePage";
 
 const Event = () => {
   const {push} = useRouter();
@@ -101,7 +102,9 @@ const Event = () => {
     console.log(data);
 
     // delete form data
+    setIsEventForm(true);
     formDataEvent.current.reset();
+    window.scrollTo(0, 0);
     setShowNoti(true);
   }
 
@@ -119,7 +122,7 @@ const Event = () => {
       <div className={`${showNoti ? '' : 'hidden'} absolute container w-screen h-screen bg-gray-50 bg-opacity-50` }>
         <Notification type={'success'} title={'Thành công'} content={'Thông tin đã được cập nhật'} close={closeNoti}/>
       </div>
-      <h1 className='text-heading1 font-bold text-primary'>Đăng ký sự kiện</h1>
+      <TitlePage title={"Đăng ký sự kiện"} />
 
       <div className='container flex bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
         <form className="container" ref={formDataEvent} onSubmit={(e) => preventSubmit(e)}>    
