@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
+import { updateStates } from "@redux/auth";
 
 const Account = () => {
   const data = useSelector(state => state.auth)
@@ -39,8 +40,8 @@ const Account = () => {
     role: data.role,
     avatarUrl: avatar,
     field: field,
-    latitude: data.longitude,
-    longitude: data.latitude,
+    latitude: data.latitude,
+    longitude: data.longitude,
   })
 
   const setValue = (e) => {
@@ -77,7 +78,7 @@ const Account = () => {
     async ({updatedData, avatar}) => {
       const updatedAccount = await callApiUpdateAccount(brandInfo.idUser,updatedData);
       let updatedAva = null;
-      if(avatar !== '/images/defaultAva.jpg'){
+      if(avatar instanceof File){
         updatedAva = await callApiUpdateAccountImage(brandInfo.idUser,avatar);
       }
       return {updatedAccount,updatedAva};
@@ -88,15 +89,28 @@ const Account = () => {
         setIsError(false);
         setShowNoti(true);
         setNotiMsg("Cập nhật thông tin thành công");
+
         // Update redux
-        dispatch(updateStates(data.updatedAccount.metadata));
+        // dispatch(updateStates(data.updatedAccount.metadata));
+        const avatar = data.updatedAva?.metadata;
+        if(avatar !== null){
+          const updatedData = {
+            ...(data.updatedAccount.metadata),
+            avatarUrl: avatar
+          };
+          console.log(updatedData);
+          dispatch(updateStates(updatedData));
+        } else {
+          dispatch(updateStates(data.updatedAccount.metadata));
+        }
       },
       onError: (error) => {
           const msgErr = error.response.data.message;
           setIsError(true);
           setShowNoti(true);
           setNotiMsg(msgErr);
-      }
+      },
+
     }
   )
 
@@ -121,9 +135,9 @@ const Account = () => {
 
   return (
     <div className='container w-full my-4'>
-      <div className={`${showNoti ? '' : 'hidden'} absolute w-full h-full bg-gray-50 bg-opacity-50 flex justify-center items-center` }>
+      <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
         <Notification type={`${isError ? 'error' : 'success'}` } 
-            title={`${isError ? 'Error' : 'Success'}` }  content={notiMsg} close={closeNoti}/>
+            title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
       </div>
       <TitlePage title={"Thông tin thương hiệu"} />
 

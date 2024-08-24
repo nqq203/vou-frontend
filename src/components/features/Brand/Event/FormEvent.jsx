@@ -56,14 +56,21 @@ const FormEvent = () => {
               </div>
   
   
-              <h2 className='text-heading3_semibold text-primary mt-8'>Vouchers</h2>
+              <h2 className='text-heading3_semibold text-primary mt-8'>Voucher</h2>
   
               <div className="flex gap-4">
+                <div className="flex flex-col px-2 py-2 grow">
+                  <h5 className="text-base font-semibold">Tên voucher</h5>
+                  <input type="text" className="input_text" placeholder="Tên voucher" name="voucher_name" required  />
+                </div> 
+
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Mã voucher</h5>
                   <input type="text" className="input_text" placeholder="XXXXXX" name="voucher_code" required  />
                 </div>
-  
+              </div>
+
+              <div className="flex gap-4">  
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Trị giá</h5>
                   <input type="number" className="input_text" placeholder="100000VNĐ" name="voucher_price" required  />

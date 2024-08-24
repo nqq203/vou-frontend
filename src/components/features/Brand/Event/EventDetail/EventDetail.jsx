@@ -12,6 +12,8 @@ import CheckBox from "@components/common/CheckBox";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { IoChevronBackCircle } from "react-icons/io5";
 import Notification from "@components/common/Notification";
+import TitlePage from "@components/common/TitlePage";
+
 
 const EventDetail = () => {
   const searchParams = useSearchParams();
@@ -22,6 +24,9 @@ const EventDetail = () => {
   //Other Brands
   const listAvailableBrands = ['Grab','Katinat','BE','Vinfast'];
   const [listBrands, setListBrands] = useState(['Grab','Katinat'])
+  // List items game LAC XU
+  const listAvailableItems = ['Chó','Gà','Vịt','Mèo','Xu'];
+  const [listItems, setListItems] = useState([]);
 
   // Event
   const [banner, setBanner] = useState(null)
@@ -35,7 +40,7 @@ const EventDetail = () => {
   // Game 
   const listGames = ['Quizz','Lắc xu']
   const [openCategory, setOpenCategory] = useState(false)
-  const [gameType, setgameType] = useState(listGames[0])
+  const [gameType, setgameType] = useState(listGames[1])
   const [gameName, setGameName] = useState("");
 
   
@@ -43,6 +48,15 @@ const EventDetail = () => {
     if(status !== 'done'){
         setOpenCategory(!state);
     }
+  }
+
+  // Voucher Type
+  const listVoucherType = ['Online','Offline']
+  const [openCategoryVoucher, setOpenCategoryVoucher] = useState(false)
+  const [voucherType, setvoucherType] = useState(listVoucherType[0])
+  
+  const changeCategoryVoucher = (state) => {
+    setOpenCategoryVoucher(!state);
   }
   
   // Change Event to Game
@@ -62,6 +76,17 @@ const EventDetail = () => {
       listBrandsTemp = listBrandsTemp.filter(item => item !== brand)
     }
     setListBrands(listBrandsTemp);
+  }
+
+  // Add items game
+  const addItems = (item) => {
+    let listItemsTemp = listItems;
+    if(!listItemsTemp.includes(item)){
+      listItemsTemp.push(item)
+    } else {
+      listItemsTemp = listItemsTemp.filter(it => it !== item)
+    }
+    setListItems(listItemsTemp);
   }
   
   const formDataEvent = useRef(null);
@@ -95,10 +120,12 @@ const EventDetail = () => {
         startDate: formatDate(startDate),
         endDate: formatDate(endDate),
         expiredDay: formatDate(expiredDay),
+        ...{voucherType}
       },
       'gameInfo': {
         ...formProps,
         ...{gameType},
+        listItems: listItems,
       },
       bannerFile: banner,
       QRImage: qrImg,
@@ -110,6 +137,7 @@ const EventDetail = () => {
     console.log(data);
 
     // delete form data
+    setIsEventForm(true);
     setShowNoti(true);
 
   }
@@ -133,15 +161,11 @@ const EventDetail = () => {
 
   return(
     <div className='container w-full my-4'>
-      <div className={`${showNoti ? '' : 'hidden'} absolute container w-screen h-screen bg-gray-50 bg-opacity-50` }>
+      <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
         <Notification type={'success'} title={'Thành công'} content={'Thông tin đã được cập nhật'} close={closeNoti}/>
       </div>
-      <div className="flex gap-2 items-center">
-        <div className="text-primary p-2 cursor-pointer" onClick={goBackToHomepage}>
-          <IoChevronBackCircle size={40} />
-        </div>
-        <h1 className='text-heading1 font-bold text-primary'>Thông tin sự kiện</h1>
-      </div>
+      <TitlePage title={"Thông tin sự kiện"} />
+
 
       <div className='container flex flex-col bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
         <div className="flex justify-between items-center">
@@ -206,20 +230,57 @@ const EventDetail = () => {
   
               <div className="flex gap-4">
                 <div className="flex flex-col px-2 py-2 grow">
+                  <h5 className="text-base font-semibold">Tên voucher</h5>
+                  <input type="text" className="input_text" placeholder="Ten voucher" 
+                    name="voucher_name" defaultValue={dataEvent.eventInfo.voucher_name }   required  />
+                </div> 
+
+                <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Mã voucher</h5>
-                  <input  disabled={status === 'done'} type="text" className="input_text" placeholder="XXXXXX" 
+                  <input type="text" className="input_text" placeholder="XXXXXX" 
                     name="voucher_code" defaultValue={dataEvent.eventInfo.voucher_code }   required  />
                 </div>
   
+              </div>
+
+              <div className="flex gap-4">  
+                <div className="flex flex-col px-2 py-1 grow">
+                    <h5 className="text-base font-semibold">Loại voucher</h5>
+                    <div className="input_dropdown" onClick={() => changeCategoryVoucher(openCategoryVoucher)}>
+                    <span className='text-gray-900'>{voucherType}</span>
+                    <MdOutlineArrowDropDown size={28}/>
+                    </div>
+
+                    {openCategoryVoucher ? 
+                    (
+                        <div 
+                          className="absolute z-10 mt-[80px] w-[250px] origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" 
+                          role="menu" aria-orientation="vertical" aria-labelledby="menu-button"
+                        >
+                          <ul className="py-1 " role="none">
+                              {listVoucherType.map((item) => (
+                              <li key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
+                                  role="menuitem" value={item} onClick={(e) => {setvoucherType(e.target.textContent); setOpenCategoryVoucher(false);}}
+                              > 
+                                  {item}
+                              </li>
+                              ))}
+                          </ul>
+                        </div>
+                    )
+                    : <></>
+                    }
+                  </div>
+
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Trị giá</h5>
-                  <input  disabled={status === 'done'} type="number" className="input_text" placeholder="100000VNĐ" 
+                  <input type="number" className="input_text" placeholder="100000VNĐ" 
                     name="voucher_price" defaultValue={dataEvent.eventInfo.voucher_price }   required  />
                 </div> 
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày hết hạn</h5>
-                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
+                  <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
                     selected={expiredDay} minDate={new Date()}  onChange={(date) => setExpiredDay(date)}   />
                 </div> 
               </div>
@@ -252,33 +313,11 @@ const EventDetail = () => {
                <h2 className='text-heading3_semibold text-primary'>Trò chơi</h2>
               <div className="flex gap-4">
 
-                <div className="flex flex-col px-2 py-1 min-w-[424px] ">
-                    <h5 className="text-base font-semibold">Lĩnh vực</h5>
-                    <div className="input_dropdown" onClick={() => changeCategory(openCategory)}>
-                    <span className='text-gray-900'>{gameType}</span>
-                    <MdOutlineArrowDropDown size={28}/>
-                    </div>
-
-                    {openCategory ? 
-                    (
-                        <div 
-                        className="absolute z-10 mt-[88px] w-[400px] origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" 
-                        role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
-                          <ul className="py-1 " role="none">
-                              {listGames.map((item) => (
-                              <li key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
-                                  role="menuitem" value={item} onClick={(e) => {setgameType(e.target.textContent); setOpenCategory(false);}}
-                              > 
-                                  {item}
-                              </li>
-                              ))}
-                          </ul>
-                        </div>
-                    )
-                    : <></>
-                    }
-                    
-                </div>
+                <div className="flex flex-col px-2 py-2 grow">
+                  <h5 className="text-base font-semibold">Loại game</h5>
+                  <input  disabled type="text" className="input_text_disabled"
+                    name="game_type" value={gameType}   required  />
+                </div> 
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên trò chơi</h5>
@@ -325,12 +364,27 @@ const EventDetail = () => {
                     </div>
                 ))
               ) : (
-                <div className="flex flex-col px-2 py-2 ">
-                  <h5 className="text-base font-semibold">Chọn số lượng vật phẩm</h5>
-                  <span className="text-medium font-light italic tex-gray-700">Hệ thống sẽ random các vật phẩm theo số lượng yêu cầu</span>
-                  <input  disabled={status === 'done'} type="number" className="input_text" placeholder="3" 
-                    name="num_of_items" defaultValue={dataEvent.gameInfo.num_of_items }   required  />
-                </div> 
+                <div className="flex flex-col px-2 py-2 mb-2">
+                  <div className="flex flex-col px-2 py-2">
+                    <h5 className="text-base font-semibold">Chọn vật phẩm cho game</h5>
+                    <span className="text-medium font-light italic tex-gray-700">Hệ thống sẽ cho phép tạo ra các vật phẩm sau</span>
+                    <div className="flex gap-4 mt-2">
+                      {listAvailableItems.map((item,index) => (
+                        <CheckBox key={index} label={item} 
+                          checked={listItems.includes(item)} 
+                          onClick={() => addItems(item)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col px-2 py-2 ">
+                    <h5 className="text-base font-semibold ">Số lượng xu cần đạt để đổi voucher (Nếu có chọn item xu)</h5>
+                    <input type="text" className="input_text max-w-[404px]" placeholder="" 
+                      name="aim_coin" defaultValue={""}  required  />
+                  </div>
+                  
+                </div>
               )}
 
               <div className="flex gap-4 w-[422px]">

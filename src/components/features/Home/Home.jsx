@@ -21,12 +21,12 @@ const Home = () => {
 
         <div className="sm:flex hidden mt-4">
             <Link href={'/signIn'} className="primary_btn w-[200px]">
-                Sign In
+                Đăng nhập
             </Link>
         </div>
         <div className="sm:flex hidden mt-4">
             <Link href={'/signUp'} className="outline_btn w-[200px]">
-                Sign Up
+                Đăng ký
             </Link>
         </div>
     </div>

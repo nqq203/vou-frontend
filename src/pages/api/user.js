@@ -17,7 +17,8 @@ export const callApiUpdateAccount = async (idUser,updatedData) => {
 
 export const callApiUpdateAccountImage = async (idUser,avatar) => {
     const formData = new FormData();
-    formData.append('avatar', avatar);
+    console.log("Ava:" , avatar instanceof File)
+    formData.append('avatar',avatar);
     // formData.append('_method', 'PATCH');
 
     const {data} = await api.patch(`/users/${idUser}/avatar`,

@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useState } from 'react';
 
 const TitlePage = ({title}) => {
-    const settingOptions = ['Sign Out'];
+    const settingOptions = ['Đăng xuất'];
     const router = useRouter();
     const dispatch = useDispatch();
     const [openCategory, setOpenCategory] = useState(false);
@@ -45,7 +45,7 @@ const TitlePage = ({title}) => {
                     onMouseLeave={handleMouseLeave}>
                 <div className="py-1 " role="none">
                     {settingOptions.map((item) => (
-                    <a key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
+                    <a key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200 cursor-pointer" 
                         role="menuitem" value={item} onClick={signOut}
                     > 
                         {item}

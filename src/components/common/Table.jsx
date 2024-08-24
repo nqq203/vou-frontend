@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export default function Table({ head, rows, listUsers, isEditTable, scrollViewStyle, setInfo, handleOpenForm }) {
   
   return (
-    <div className="rounded-[20px] shadow-md mt-5 border-spacing-x-2 bg-white">
+    <div className="rounded-lg shadow-md mt-5 border-spacing-x-2 bg-white border border-gray-200">
       <table className="table-fixed text-center items-center ml-2 mr-10">
         <div className="h-[50x]"> {/* this is make for the header is aligned evenly with the body*/}
           <thead className="h-[70px]">
@@ -43,7 +43,7 @@ export default function Table({ head, rows, listUsers, isEditTable, scrollViewSt
                       return <td className="border-b-2 border-grey-50 pt-3 pb-3 text-[14px] w-[250px] cursor-pointer" key={index}>{cell?.length > 30 ? cell.slice(0, 30) + "..." : cell}</td>
                     }
                     )}
-                    {isEditTable && <MdEdit className="absolute h-full cursor-pointer hover:bg-gray-50" style={{right: "-30px"}} color="#cecece"/>}
+                    {isEditTable && <MdEdit className="absolute h-full cursor-pointer hover:bg-gray-50" style={{right: "-30px"}} color="#949494"/>}
                   </tr>
                 )
               })}

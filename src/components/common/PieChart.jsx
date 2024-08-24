@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
-const PieChart = () => {
+const PieChart = ({data}) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -11,7 +11,7 @@ const PieChart = () => {
       data: {
         labels: ['Players', 'Brands', 'Admins'],
         datasets: [{
-          data: [300, 50, 100],
+          data: data,
           backgroundColor: [
             '#ffab00',  // Orange
             '#00b8d4',  // Teal

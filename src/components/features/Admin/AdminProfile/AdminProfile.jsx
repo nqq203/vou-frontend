@@ -87,7 +87,7 @@ const AdminProfile = () => {
       async ({updatedData, avatar}) => {
         const updatedAccount = await callApiUpdateAccount(userInfo.idUser,updatedData);
         let updatedAva = null;
-        if(avatar !== '/images/defaultAva.jpg'){
+        if(avatar instanceof File){
           updatedAva = await callApiUpdateAccountImage(userInfo.idUser,avatar);
         }
         return {updatedAccount,updatedAva};
@@ -100,17 +100,17 @@ const AdminProfile = () => {
           setNotiMsg("Cập nhật thông tin thành công");
 
           // Update redux
-          dispatch(updateStates(data.updatedAccount.metadata));
-          // const avatar = data.updatedAva?.metadata;
-          // if(avatar !== null){
-          //   const updatedData = {
-          //     ...(data.updatedAccount.metadata),
-          //     avatarUrl: avatar
-          //   };
-          //   dispatch(updateStates(updatedData));
-          // } else {
-          //   dispatch(updateStates(data.updatedAccount.metadata));
-          // }
+          // dispatch(updateStates(data.updatedAccount.metadata));
+          const avatar = data.updatedAva?.metadata;
+          if(avatar !== null){
+            const updatedData = {
+              ...(data.updatedAccount.metadata),
+              avatarUrl: avatar
+            };
+            dispatch(updateStates(updatedData));
+          } else {
+            dispatch(updateStates(data.updatedAccount.metadata));
+          }
         },
         onError: (error) => {
             const msgErr = error.response.data.message;
@@ -130,8 +130,8 @@ const AdminProfile = () => {
 
     return (
       <div className='container w-full my-4'>
-        <div className={`${showNoti ? '' : 'hidden'} absolute w-full h-full bg-gray-50 bg-opacity-50 flex justify-center items-center` }>
-          <Notification type={`${isError ? 'error' : 'success'}` } 
+        <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
+          <Notification type={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` } 
               title={`${isError ? 'Error' : 'Success'}` }  content={notiMsg} close={closeNoti}/>
         </div>
         <TitlePage title={"Thông tin tài khoản"} />

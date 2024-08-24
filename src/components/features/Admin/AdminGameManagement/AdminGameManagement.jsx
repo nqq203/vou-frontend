@@ -38,14 +38,10 @@ export default function AdminGameManagement() {
   }, [gameInfo])
 
   return (
-    <div className="container p-6 mx-auto">
+    <div className="container w-full my-4">
       {isOpenEditGame && <AdminEditGameForm gameInfo={gameInfo} handleClose={handleCloseEditGame}/>}
       <TitlePage title={"Quản lí trò chơi"} />
 
-      <div className="flex items-center bg-white rounded-[10px] shadow-md p5">
-        <FaSearch className="text-center mr-3 ml-3 text-primary cursor-pointer"/>
-        <input type="text" placeholder="Tên game..." className="flex-grow border-b-2 bg-transparent mt-3 mb-3 mr-3 outline-none placeholder:font-bold"/>
-      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
         {gameList.map((game, index) => (
           <GameItem key={index} game={game} onClick={() => handleOpenEditGame(game)}/>

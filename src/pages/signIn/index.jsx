@@ -42,6 +42,7 @@ const LoginPage = () => {
                     localStorage.setItem('idUser', account.idUser);
                     localStorage.setItem('avatarUrl', account.avatarUrl);
                     localStorage.setItem('username', account.username);
+                    localStorage.setItem('currentTab', "Trang chủ");
                     // localStorage.setItem('fullName', account.fullName);
                     // localStorage.setItem('email', account.email);
                     // localStorage.setItem('phoneNumber', account.phoneNumber);
@@ -110,7 +111,7 @@ const LoginPage = () => {
     <div className='w-screen h-screen bg-[url("/images/bgSignIn.png")] flex flex-center'>
         <div className={`${showNoti ? '' : 'hidden'} absolute w-screen h-screen bg-gray-50 bg-opacity-50 flex justify-center items-center` }>
             <Notification type={`${isError ? 'error' : 'success'}` } 
-                title={`${isError ? 'Error' : 'Success'}` }  content={notiMsg} close={closeNoti}/>
+                title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
         </div>
         <div className='container flex flex-col justify-center align-middle 
             w-[540px] p-8 gap-8 rounded-[24px] bg-white shadow-lg'
@@ -126,27 +127,27 @@ const LoginPage = () => {
                     />
                     <p className="logo_text">VOU</p>
                 </Link>
-                <h2 className='text-[28px] text-center'>Create wonderful events with us</h2>
+                <h2 className='text-[28px] text-center'>Cùng tạo ra những sự kiện thú vị</h2>
             </div>
             
             <div className='flex flex-col gap-3'>
                 <div className="container flex flex-col">
-                    <span className='text-sm mb-1'>Username</span>
+                    <span className='text-sm mb-1'>Tên đăng nhập</span>
                     <input placeholder='username' name='username' type="text" className='search_input' onChange={setInfo}></input>
                 </div>
 
                 <div className="container flex flex-col">
-                    <span className='text-sm mb-1'>Password</span>
+                    <span className='text-sm mb-1'>Mật khẩu</span>
                     <input placeholder='12345' name='password' type='password' className='search_input' onChange={setInfo}></input>
                 </div>
 
-                <Link href={'/signIn'} className='text-sm underline text-gray-500' >Forget your password?</Link>
-                <button className='primary_btn' onClick={submitHandler}>Sign In</button>
+                <Link href={'/signIn'} className='text-sm underline text-gray-500' >Quên mật khẩu?</Link>
+                <button className='primary_btn' onClick={submitHandler}>Đăng nhập</button>
             </div>
 
             <div className="flex gap-2 items-center">
                 <div className='h-0.5 w-screen bg-gray-300'></div>
-                <span className="text-sm text-gray-500">OR</span>
+                <span className="text-sm text-gray-500">Hoặc</span>
                 <div className='h-0.5 w-screen bg-gray-300'></div>
             </div>
 
@@ -159,8 +160,8 @@ const LoginPage = () => {
 
 
             <span className='text-sm text-center'>
-                Don't have an account?
-                <Link href={'/signUp'} className='underline ml-1'>Sign up</Link>
+                Chưa có tài khoản?
+                <Link href={'/signUp'} className='underline ml-1'>Đăng ký</Link>
             </span>
         </div>
 

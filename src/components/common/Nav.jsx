@@ -26,14 +26,37 @@ const Nav = (isAdmin) => {
     }
 
   useEffect(() => {
+    let items = []
       if(isAdmin){
           adminNav.current.classList.remove('hidden');
+        items = adminNav.current.children;
+
       } else {
           brandNav.current.classList.remove('hidden');
+         items = brandNav.current.children;
       }
+
+      const currentTab = localStorage.getItem('currentTab') 
+
+    for (let i = 0; i < items.length; i++) {
+        const listItem = items[i].querySelector('li');
+    
+        if(currentTab === listItem.textContent){
+            listItem.classList.add('sidebar_active');
+            const newDiv = document.createElement('div');
+            newDiv.className = 'w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4';
+            listItem.insertBefore(newDiv, listItem.firstChild);
+            break;
+        }
+    }
+
+
+
   },[adminNav,brandNav])
 
   const handleClick = (e) => {
+    localStorage.setItem('currentTab',e.target.textContent)
+    console.log(e.target.textContent);
     let items = brandNav.current.children;
     if(isAdmin){
         items = adminNav.current.children
@@ -76,8 +99,7 @@ const Nav = (isAdmin) => {
         {/* Brands */}
         <ul className="hidden" ref={brandNav}>
             <Link href={'/brand'} >
-                <li className="sidebar_icon sidebar_active" onClick={(e) => handleClick(e)} >
-                    <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>
+                <li className={`sidebar_icon`} onClick={(e) => handleClick(e)} >
                     <AiFillHome size={25}/>
                     Trang chủ
                 </li>
@@ -85,14 +107,14 @@ const Nav = (isAdmin) => {
 
 
             <Link href={'/brand/event'} >
-                <li className="sidebar_icon" onClick={(e) => handleClick(e)}>
+                <li className={`sidebar_icon`} onClick={(e) => handleClick(e)}>
                     <FaRegCalendarPlus size={25} />
                     Đăng ký sự kiện
                 </li>
             </Link>
 
             <Link href={'/brand/account'} >
-                <li className="sidebar_icon" onClick={(e) => handleClick(e)}>
+                <li className={`sidebar_icon`} onClick={(e) => handleClick(e)}>
                     <MdAccountBox size={25}/>
                     Tài khoản
                 </li>
@@ -103,29 +125,28 @@ const Nav = (isAdmin) => {
         {/* Admin */}
         <ul className="hidden" ref={adminNav}>
             <Link href="/admin">
-                <li className="sidebar_icon sidebar_active" onClick={(e) => handleClick(e)} >
-                    <div className="w-1.5 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] mr-4"></div>
+                <li className={`sidebar_icon`} onClick={(e) => handleClick(e)} >
                     <AiFillHome size={25}/>
                     Trang chủ
                 </li>
             </Link>
 
             <Link href="/admin/accounts">
-                <li className="sidebar_icon" onClick={(e) => handleClick(e)}>
+                <li className={`sidebar_icon`} onClick={(e) => handleClick(e)}>
                         <MdSupervisorAccount size={25}/>
                         Quản lí tài khoản
                 </li>
             </Link>
 
             <Link href="/admin/games">
-                <li className="sidebar_icon" onClick={(e) => handleClick(e)}>
+                <li className={`sidebar_icon`} onClick={(e) => handleClick(e)}>
                     <FaGamepad size={25}/>
                     Quản lí trò chơi
                 </li>
             </Link>
 
             <Link href="/admin/profile">
-                <li className="sidebar_icon" onClick={(e) => handleClick(e)}>
+                <li className={`sidebar_icon`} onClick={(e) => handleClick(e)}>
                     <MdAccountBox size={25}/>
                     Tài khoản
                 </li>

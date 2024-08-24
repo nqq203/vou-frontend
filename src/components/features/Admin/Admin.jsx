@@ -49,10 +49,8 @@ const Admin = () => {
   
 
   return (
-    <div className='container p-6 mx-auto'>
-      <div className="container w-full flex justify-between items-center">
-        <TitlePage title={"Dashboard"} />
-      </div>
+    <div className='container w-full my-4'>
+      <TitlePage title={"Dashboard"} />
 
       <AdminOverview overview={overview}/>
       <AdminStatistic />

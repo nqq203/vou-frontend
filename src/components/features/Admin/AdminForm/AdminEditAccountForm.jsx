@@ -6,13 +6,8 @@ import { callApiUpdateAccount } from "@pages/api/user";
 import { useRef } from "react";
 import Notification from "@components/common/Notification";
 
-export default function AdminEditAccountForm({ userInfo, handleClose }) {
+export default function AdminEditAccountForm({ userInfo, handleClose,handleNoti }) {
   const [user, setUser] = useState(userInfo);
-
-  // Notification
-  const [showNoti, setShowNoti] = useState(true)
-  const [isError, setIsError] = useState(false);
-  const [notiMsg, setNotiMsg] = useState('');
 
   const formAccount = useRef(null);
 
@@ -23,14 +18,12 @@ export default function AdminEditAccountForm({ userInfo, handleClose }) {
   };
 
   const updateAccountMutation = useMutation(
-    (data) => callApiUpdateAccount(data),
+    ({id,data}) => callApiUpdateAccount(id,data),
     {
       onSuccess: (data) => {
         console.log(data)
-        setIsError(false);
-        setShowNoti(true);
-        setNotiMsg("Cập nhật thông tin thành công");
-
+        handleClose();
+        handleNoti(false,"Cập nhật thông tin thành công")
         
       },
       onError: (error) => {
@@ -38,7 +31,7 @@ export default function AdminEditAccountForm({ userInfo, handleClose }) {
           setIsError(true);
           setShowNoti(true);
           setNotiMsg(msgErr);
-      }
+      },
     }
   )
 
@@ -51,18 +44,13 @@ export default function AdminEditAccountForm({ userInfo, handleClose }) {
     const formProps = Object.fromEntries(formData);
     console.log(formProps)
 
-    updateAccountMutation.mutate(formProps);
+    updateAccountMutation.mutate({id: user.idUser,data: formProps});
   };
 
 
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-      {/* <div className={`${showNoti ? '' : 'hidden'} absolute w-full h-full bg-gray-50 bg-opacity-50 flex justify-center items-center` }>
-          <Notification type={`${isError ? 'error' : 'success'}` } 
-              title={`${isError ? 'Error' : 'Success'}` }  content={notiMsg} close={setShowNoti(false)}/>
-        </div> */}
-
       <div className="relative bg-white p-5 rounded-lg shadow-lg w-full max-w-4xl h-auto mx-4">
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-900"
@@ -71,7 +59,7 @@ export default function AdminEditAccountForm({ userInfo, handleClose }) {
         </button>
         <form className="container ml-4 mr-4" ref={formAccount}>
           <div className="flex flex-col gap-4">
-            <h3 className="font-bold text-[24px]">Thông tin tài khoản</h3>
+            <h3 className="font-bold text-[24px]">Chỉnh sửa tài khoản</h3>
             <div className="w-[150px] h-[150px]">
               <Image src={user.avatarUrl || '/images/defaultAva.jpg'} alt="avt" width={150} height={150} className="rounded-full" />
             </div>
@@ -104,9 +92,9 @@ export default function AdminEditAccountForm({ userInfo, handleClose }) {
                     value={user.role}
                     onChange={handleChange} 
                     className="input_dropdown">
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                    <option value="brand">Brand</option>
+                    <option value="PLAYER">Player</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="BRAND">Brand</option>
                   </select>
                 </label>
               </div>
@@ -119,9 +107,9 @@ export default function AdminEditAccountForm({ userInfo, handleClose }) {
                     value={user.status}
                     onChange={handleChange} 
                     className="input_dropdown">
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="pending">Pending</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="PENDING">Pending</option>
                   </select>
                 </label>
               </div>
