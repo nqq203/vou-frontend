@@ -108,7 +108,7 @@ const LoginPage = () => {
     }
 
   return (
-    <div className='w-screen h-screen bg-[url("/images/bgSignIn.png")] flex flex-center'>
+    <div className='w-screen h-screen bg-[url("/images/bgSignIn.jpg")] flex flex-center'>
         <div className={`${showNoti ? '' : 'hidden'} absolute w-screen h-screen bg-gray-50 bg-opacity-50 flex justify-center items-center` }>
             <Notification type={`${isError ? 'error' : 'success'}` } 
                 title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>

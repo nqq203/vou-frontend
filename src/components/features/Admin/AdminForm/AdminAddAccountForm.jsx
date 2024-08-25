@@ -127,7 +127,7 @@ const AdminAddAccountForm = ({handleCloseAddForm, handleNoti}) => {
                     Role
                     <select
                         name="role"
-                        value={"BRAND"}
+                        value={account.role}
                         onChange={setInfo} 
                         className="input_dropdown">
                         <option value="PLAYER">Player</option>

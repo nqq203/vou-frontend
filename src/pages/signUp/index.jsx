@@ -81,7 +81,7 @@ const SignUpPage = () => {
 
 
   return (
-    <div className='w-screen h-screen bg-[url("/images/bgSignIn.png")] flex flex-center'>
+    <div className='w-screen h-screen bg-[url("/images/bgSignIn.jpg")] flex flex-center'>
         <div className={`${showNoti ? '' : 'hidden'} absolute w-screen h-screen bg-gray-50 bg-opacity-50 flex justify-center items-center` }>
             <Notification type={'error'} title={'Có lỗi xảy ra'} content={error} close={closeNoti} containerStyle={''}/>
         </div>

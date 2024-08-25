@@ -131,8 +131,8 @@ const AdminProfile = () => {
     return (
       <div className='container w-full my-4'>
         <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
-          <Notification type={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` } 
-              title={`${isError ? 'Error' : 'Success'}` }  content={notiMsg} close={closeNoti}/>
+          <Notification type={`${isError ? 'Error' : 'Success'}` } 
+              title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
         </div>
         <TitlePage title={"Thông tin tài khoản"} />
 

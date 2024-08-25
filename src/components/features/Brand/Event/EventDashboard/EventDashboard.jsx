@@ -57,7 +57,7 @@ const EventDashboard = () => {
         <div className="text-primary p-2 cursor-pointer" onClick={goBackToDetailPage}>
           <IoChevronBackCircle size={40} />
         </div>
-        <h1 className='text-[40px] header font-bold text-left text-primary'>Dashboard</h1>
+        <h1 className='text-heading1 font-bold text-primary'>Dashboard</h1>
       </div>
       <AdminOverview overview={overview}/>
       <AdminStatistic />

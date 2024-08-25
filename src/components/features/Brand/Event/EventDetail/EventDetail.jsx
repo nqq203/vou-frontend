@@ -1,37 +1,38 @@
 'use client'
 import { useState,useRef, useEffect } from "react"
-import { useRouter } from "next/navigation";    
 import { useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
+import { useRouter } from "next/navigation";    
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useCallback } from "react";
 
 import ImageUploader from "@components/common/ImageUploader";
 import Tag from "@components/common/Tag";
 import CheckBox from "@components/common/CheckBox";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { IoChevronBackCircle } from "react-icons/io5";
+
 import Notification from "@components/common/Notification";
 import TitlePage from "@components/common/TitlePage";
-
+import FormGame from "../FormGame";
 
 const EventDetail = () => {
+  const {push} = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get('id') || 'none';
   const status = searchParams.get('status') || 'pending';
-//   console.log(id)
 
   //Other Brands
   const listAvailableBrands = ['Grab','Katinat','BE','Vinfast'];
-  const [listBrands, setListBrands] = useState(['Grab','Katinat'])
+  const [listBrands, setListBrands] = useState([])
   // List items game LAC XU
   const listAvailableItems = ['Chó','Gà','Vịt','Mèo','Xu'];
   const [listItems, setListItems] = useState([]);
 
   // Event
-  const [banner, setBanner] = useState(null)
-  const [qrImg, setQrImg] = useState(null)
-  const [voucherImg, setvoucherImg] = useState(null)
+  const [banner, setBanner] = useState(undefined)
+  const [qrImg, setQrImg] = useState(undefined)
+  const [voucherImg, setvoucherImg] = useState(undefined)
   const [numOfVouchers, setNumOfVouchers] = useState(undefined);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -40,13 +41,13 @@ const EventDetail = () => {
   // Game 
   const listGames = ['Quizz','Lắc xu']
   const [openCategory, setOpenCategory] = useState(false)
-  const [gameType, setgameType] = useState(listGames[1])
+  const [gameType, setgameType] = useState(listGames[0])
   const [gameName, setGameName] = useState("");
 
   
   const changeCategory = (state) => {
     if(status !== 'done'){
-        setOpenCategory(!state);
+      setOpenCategory(!state);
     }
   }
 
@@ -56,7 +57,9 @@ const EventDetail = () => {
   const [voucherType, setvoucherType] = useState(listVoucherType[0])
   
   const changeCategoryVoucher = (state) => {
-    setOpenCategoryVoucher(!state);
+    if(status !== "done"){
+      setOpenCategoryVoucher(!state);
+    }    
   }
   
   // Change Event to Game
@@ -90,64 +93,105 @@ const EventDetail = () => {
   }
   
   const formDataEvent = useRef(null);
-  const [dataEvent, setDataEvent] = useState({eventInfo: {}, gameInfo: {}});
-  const [showNoti, setShowNoti] = useState(false)
+  const [dataEvent, setDataEvent] = useState({ gameInfoDTO: {},});
+
+   // Notification
+   const [showNoti, setShowNoti] = useState(false)
+   const [isError, setIsError] = useState(false);
+   const [notiMsg, setNotiMsg] = useState('');
 
 
   const handleFormData = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
-    setDataEvent((prevDataEvent) => ({
-      ...prevDataEvent,
-      [isEventForm ? 'eventInfo' : 'gameInfo']: { ...formProps },
-    }));
+    console.log(formProps)
+
+    setDataEvent((prevDataEvent) => {
+      if(isEventForm){
+        return {
+          ...prevDataEvent,
+          ...formProps,
+        }
+      } else {
+        return{
+          ...prevDataEvent,
+          'gameInfoDTO': {...formProps},
+        }
+      }
+    });
   }
 
   const formatDate = (date) => {
     if(date){
       return format(date,'dd/MM/yyyy')
-    } 
+    }
     return "";
   }
+
+  const [gameStartAt, setGameStartAt] = useState(null);
+  const [quizData, setQuizData] = useState(Array.from({ length: 10 }).map((_, i) => ({
+    question: dataEvent.gameInfoDTO[`question${i + 1}`] || '',
+    ans1: dataEvent.gameInfoDTO[`${i + 1}_answer_1`] || '',
+    ans2: dataEvent.gameInfoDTO[`${i + 1}_answer_2`] || '',
+    ans3: dataEvent.gameInfoDTO[`${i + 1}_answer_3`] || '',
+    correctAnswerIndex: 0,
+  })));
 
   const sendData = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
+    console.log(formProps)
+
+    
+    // ...dataEvent,
     const data = {
-      ...dataEvent,
-      'eventInfo': {
-        ...dataEvent.eventInfo,
-        startDate: formatDate(startDate),
-        endDate: formatDate(endDate),
-        expiredDay: formatDate(expiredDay),
-        ...{voucherType}
+      eventName: dataEvent.eventName,
+      numberOfVouchers: dataEvent.numberOfVouchers,
+      startDate: startDate,
+      endDate: endDate,
+      brandId: listBrands,
+      'inventoryInfo':{
+        gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
+        voucher_type: voucherType,
+        voucher_code: dataEvent.voucher_code,
+        voucher_description: dataEvent.voucher_description,
+        voucher_name: dataEvent.voucher_name,
+        voucher_price: dataEvent.voucher_price,
+        expiration_date: expiredDay,
+        aim_coin: formProps.aim_coin,
+        items: listItems,
       },
-      'gameInfo': {
-        ...formProps,
-        ...{gameType},
-        listItems: listItems,
+      'gameInfoDTO': {
+        name: formProps.game_name,
+        gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
+        gameStartAt: gameStartAt,
+        quiz: quizData,        
       },
+    };
+    
+    const dataImage = {
       bannerFile: banner,
       QRImage: qrImg,
       voucherImg: voucherImg,
-      listBrands: listBrands,
-    };
-    
-    setDataEvent(data);
+    }
+
+    // setDataEvent(data);
     console.log(data);
 
     // delete form data
-    setIsEventForm(true);
-    setShowNoti(true);
-
+    // setIsEventForm(true);
+    // formDataEvent.current.reset();
+    // window.scrollTo(0, 0);
+    // setShowNoti(true);
   }
+  
 
-  const closeNoti = () => {
-    setShowNoti(false)
+  const preventSubmit = (e) => {
+    e.preventDefault();
   }
 
   // routing to dashboard & home
-  const {push,router} = useRouter();
+  const {router} = useRouter();
   const toDashboard = () => {
     push('/brand/event/eventDashboard');
   }
@@ -155,17 +199,23 @@ const EventDetail = () => {
     push('/brand');
   }
 
-  const preventSubmit = (e) => {
-    e.preventDefault();
+  const closeNoti = () => {
+    setShowNoti(false)
   }
+
 
   return(
     <div className='container w-full my-4'>
       <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
-        <Notification type={'success'} title={'Thành công'} content={'Thông tin đã được cập nhật'} close={closeNoti}/>
+        <Notification type={`${isError ? 'error' : 'success'}` } 
+            title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
       </div>
-      <TitlePage title={"Thông tin sự kiện"} />
-
+      <div className="flex gap-2 items-center">
+        <div className="text-primary p-2 cursor-pointer" onClick={goBackToHomepage}>
+          <IoChevronBackCircle size={40} />
+        </div>
+        <TitlePage title={"Thông tin sự kiện"} />
+      </div>
 
       <div className='container flex flex-col bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
         <div className="flex justify-between items-center">
@@ -180,14 +230,14 @@ const EventDetail = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên sự kiện</h5>
-                  <input  disabled={status === 'done'} type="text" className="input_text" placeholder="Tên" 
-                    name="event_name" defaultValue={dataEvent.eventInfo.event_name }  required  />
+                  <input disabled={status === 'done'} type="text" className="input_text" placeholder="Tên" 
+                    name="eventName" defaultValue={dataEvent.eventName || "" }    required  />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Số lượng vouchers</h5>
-                  <input  disabled={status === 'done'} type="number" className="input_text" placeholder="100"
-                    name="num_of_vouchers" value={numOfVouchers || ''} onChange={(e) => setNumOfVouchers(e.target.value)} required  />
+                  <input disabled={status === 'done'} type="number" className="input_text" placeholder="100"
+                    name="numberOfVouchers" value={numOfVouchers || ''} onChange={(e) => setNumOfVouchers(e.target.value)}  required  />
                 </div> 
   
               </div>
@@ -231,14 +281,14 @@ const EventDetail = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên voucher</h5>
-                  <input type="text" className="input_text" placeholder="Ten voucher" 
-                    name="voucher_name" defaultValue={dataEvent.eventInfo.voucher_name }   required  />
+                  <input disabled={status === 'done'} type="text" className="input_text" placeholder="Ten voucher" 
+                    name="voucher_name" defaultValue={dataEvent.voucher_name }   required  />
                 </div> 
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Mã voucher</h5>
-                  <input type="text" className="input_text" placeholder="XXXXXX" 
-                    name="voucher_code" defaultValue={dataEvent.eventInfo.voucher_code }   required  />
+                  <input disabled={status === 'done'} type="text" className="input_text" placeholder="XXXXXX" 
+                    name="voucher_code" defaultValue={dataEvent.voucher_code }   required  />
                 </div>
   
               </div>
@@ -274,13 +324,13 @@ const EventDetail = () => {
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Trị giá</h5>
-                  <input type="number" className="input_text" placeholder="100000VNĐ" 
-                    name="voucher_price" defaultValue={dataEvent.eventInfo.voucher_price }   required  />
+                  <input disabled={status === 'done'} type="number" className="input_text" placeholder="100000VNĐ" 
+                    name="voucher_price" defaultValue={dataEvent.voucher_price }   required  />
                 </div> 
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày hết hạn</h5>
-                  <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
+                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
                     selected={expiredDay} minDate={new Date()}  onChange={(date) => setExpiredDay(date)}   />
                 </div> 
               </div>
@@ -288,7 +338,7 @@ const EventDetail = () => {
               <div className="flex flex-col px-2 py-2 h-[200px]">
                 <h5 className="text-base font-semibold">Mô tả</h5>
                 <textarea disabled={status === 'done'} type="text" className="input_text h-full" placeholder="Mô tả ngắn gọn về cách sử dụng voucher"
-                  name="voucher_description" defaultValue={dataEvent.eventInfo.voucher_description }   required />
+                  name="voucher_description" defaultValue={dataEvent.voucher_description }   required />
               </div>
   
               {/* QR Code image */}
@@ -313,56 +363,30 @@ const EventDetail = () => {
                <h2 className='text-heading3_semibold text-primary'>Trò chơi</h2>
               <div className="flex gap-4">
 
-                <div className="flex flex-col px-2 py-2 grow">
+                <div className="flex flex-col px-2 py-1 min-w-[424px] ">
                   <h5 className="text-base font-semibold">Loại game</h5>
                   <input  disabled type="text" className="input_text_disabled"
                     name="game_type" value={gameType}   required  />
-                </div> 
+                </div>
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên trò chơi</h5>
                   <input  disabled={status === 'done'} type="text" className="input_text" placeholder="Ten tro choi"
                     name="game_name" value={gameName || ''} onChange={(e) => setGameName(e.target.value)}    required  />
-                </div>                 
-                 
+                </div>
               </div>
   
               {/* Nội dung trò chơi */}
               <h2 className='text-heading3_semibold text-primary mt-8'>Phần nội dung trò chơi</h2>
               {gameType === 'Quizz' ? (
-                Array.from({ length: 10 }).map((_, i) => (
-                    <div className="flex flex-col px-2 py-2 mb-2" key={i}>
-                        <h5 className="text-base font-semibold ">Câu hỏi {i + 1}</h5>
-                        <input  disabled={status === 'done'}
-                            type="text"
-                            className="input_text"
-                            placeholder="Tên"
-                            name={`question${i + 1}`}
-                            defaultValue={dataEvent.gameInfo[`question${i + 1}`] }  
-                            required
-                        />
-
-                        <div className="flex gap-4">
-                            <div className="flex flex-col px-2 py-2 grow">
-                            <h5 className="text-base font-medium">Đáp án</h5>
-                            <input  disabled={status === 'done'} type="text" className="input_text" placeholder="Câu trả lời" 
-                              name={`${i + 1}_answer_1`} defaultValue={dataEvent.gameInfo[`${i + 1}_answer_1`] }   required  />
-                            </div>
-            
-                            <div className="flex flex-col px-2 py-2 grow">
-                            <h5 className="text-base font-medium">Trả lời 1</h5>
-                            <input  disabled={status === 'done'} type="text" className="input_text" placeholder="Câu trả lời" 
-                              name={`${i + 1}_answer_2`} defaultValue={dataEvent.gameInfo[`${i + 1}_answer_2`] }   required  />
-                            </div> 
-            
-                            <div className="flex flex-col px-2 py-2 grow">
-                            <h5 className="text-base font-medium">Trả lời 2</h5>
-                            <input  disabled={status === 'done'} type="text" className="input_text" placeholder="Câu trả lời" 
-                              name={`${i + 1}_answer_3`} defaultValue={dataEvent.gameInfo[`${i + 1}_answer_3`] }   required  />
-                            </div> 
-                        </div>
-                    </div>
-                ))
+                <>
+                  <div className="flex flex-col px-2 py-2 max-w-[424px]">
+                    <h5 className="text-base font-semibold">Thời gian bắt đầu chơi game</h5>
+                    <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
+                      selected={gameStartAt} minDate={new Date()}  onChange={(date) => setGameStartAt(date)}   />
+                  </div>
+                  <FormGame quizData={quizData} setQuizData={setQuizData} />
+                </>
               ) : (
                 <div className="flex flex-col px-2 py-2 mb-2">
                   <div className="flex flex-col px-2 py-2">
@@ -380,7 +404,7 @@ const EventDetail = () => {
 
                   <div className="flex flex-col px-2 py-2 ">
                     <h5 className="text-base font-semibold ">Số lượng xu cần đạt để đổi voucher (Nếu có chọn item xu)</h5>
-                    <input type="text" className="input_text max-w-[404px]" placeholder="" 
+                    <input disabled={status === 'done'} type="text" className="input_text max-w-[404px]" placeholder="" 
                       name="aim_coin" defaultValue={""}  required  />
                   </div>
                   
@@ -389,10 +413,10 @@ const EventDetail = () => {
 
               <div className="flex gap-4 w-[422px]">
                 <div className="outline_btn w-[200px] mt-8" onClick={() => changeForm(isEventForm)}>Trở lại</div>
-                {status === 'done' ? null : (
-                    <div className="primary_btn w-[200px] mt-8" onClick={() => sendData()}>Lưu thay đổi</div>
-                )}
-              </div>
+                  {status === 'done' ? null : (
+                      <div className="primary_btn w-[200px] mt-8" onClick={() => sendData()}>Lưu thay đổi</div>
+                  )}
+                </div>
             </div>
           )}
         </form>

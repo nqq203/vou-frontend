@@ -4,15 +4,20 @@ import DatePicker from "react-datepicker";
 import { useRouter } from "next/navigation";    
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useMutation } from "react-query";
 
 import ImageUploader from "@components/common/ImageUploader";
 import CheckBox from "@components/common/CheckBox";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import Notification from "@components/common/Notification";
 import TitlePage from "@components/common/TitlePage";
+import FormGame from "./FormGame";
+import { callApiCreateEvent } from "@pages/api/event";
+
 
 const Event = () => {
   const {push} = useRouter();
+
   //Other Brands
   const listAvailableBrands = ['Grab','Katinat','BE','Vinfast'];
   const [listBrands, setListBrands] = useState([])
@@ -34,7 +39,6 @@ const Event = () => {
   const [openCategory, setOpenCategory] = useState(false)
   const [gameType, setgameType] = useState(listGames[1])
   const [gameName, setGameName] = useState("");
-
 
   
   const changeCategory = (state) => {
@@ -66,7 +70,8 @@ const Event = () => {
     } else {
       listBrandsTemp = listBrandsTemp.filter(item => item !== brand)
     }
-    setListBrands(listBrandsTemp);
+    // setListBrands(listBrandsTemp);
+    setListBrands([1]);
   }
 
   // Add items game
@@ -77,62 +82,145 @@ const Event = () => {
     } else {
       listItemsTemp = listItemsTemp.filter(it => it !== item)
     }
-    setListItems(listItemsTemp);
+    // setListItems(listItemsTemp);
+    setListItems([1,2]);
+
   }
   
   const formDataEvent = useRef(null);
-  const [dataEvent, setDataEvent] = useState({eventInfo: {}, gameInfo: {}});
-  const [showNoti, setShowNoti] = useState(false)
+  const [dataEvent, setDataEvent] = useState({ gameInfoDTO: {},});
+
+   // Notification
+   const [showNoti, setShowNoti] = useState(false)
+   const [isError, setIsError] = useState(false);
+   const [notiMsg, setNotiMsg] = useState('');
 
 
   const handleFormData = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
+    console.log(formProps)
 
-    setDataEvent((prevDataEvent) => ({
-      ...prevDataEvent,
-      [isEventForm ? 'eventInfo' : 'gameInfo']: { ...formProps },
-    }));
+    setDataEvent((prevDataEvent) => {
+      if(isEventForm){
+        return {
+          ...prevDataEvent,
+          ...formProps,
+        }
+      } else {
+        return{
+          ...prevDataEvent,
+          'gameInfoDTO': {...formProps},
+        }
+      }
+    });
   }
 
   const formatDate = (date) => {
-    if(date){
-      return format(date,'dd/MM/yyyy')
-    } 
-    return "";
-  }
+    if (!date) return '';
+    const pad = (num) => String(num).padStart(2, '0');
+    const padMilliseconds = (num) => String(num).padStart(3, '0');
+    
+    const year = date.getUTCFullYear();
+    const month = pad(date.getUTCMonth() + 1);
+    const day = pad(date.getUTCDate());
+    const hours = pad(date.getUTCHours());
+    const minutes = pad(date.getUTCMinutes());
+    const seconds = pad(date.getUTCSeconds());
+    const milliseconds = padMilliseconds(date.getUTCMilliseconds());
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+00:00`;
+  };
+
+  
+
+  const [gameStartAt, setGameStartAt] = useState(null);
+  const [quizData, setQuizData] = useState(Array.from({ length: 10 }).map((_, i) => ({
+    question: dataEvent.gameInfoDTO[`question${i + 1}`] || '',
+    ans1: dataEvent.gameInfoDTO[`${i + 1}_answer_1`] || '',
+    ans2: dataEvent.gameInfoDTO[`${i + 1}_answer_2`] || '',
+    ans3: dataEvent.gameInfoDTO[`${i + 1}_answer_3`] || '',
+    correctAnswerIndex: 0,
+  })));
+
+  const createEventMutation = useMutation(
+    (data) => callApiCreateEvent(data),
+    {
+      onSuccess: (data) => {
+        console.log(data)
+        setIsError(false);
+        setShowNoti(true);
+        setNotiMsg("Cập nhật thông tin thành công");
+
+      },
+      onError: (error) => {
+        const msgErr = error.response.data.message;
+        setIsError(true);
+        setShowNoti(true);
+        setNotiMsg(msgErr);
+      },
+    }
+  )
+
+  const [test, setTest] = useState("");
+
 
   const sendData = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
+    console.log(formProps)
+
+    // check validate data
+    if(dataEvent.eventName === "" ){
+      setIsError(true);
+      setShowNoti(true);
+      setNotiMsg("Yêu cầu điền đầy đủ các trường thông tin");
+    }
+
+
     const data = {
-      ...dataEvent,
-      'eventInfo': {
-        ...dataEvent.eventInfo,
-        startDate: formatDate(startDate),
-        endDate: formatDate(endDate),
-        expiredDay: formatDate(expiredDay),
-        ...{voucherType}
+      eventName: dataEvent.eventName,
+      numberOfVouchers: numOfVouchers,
+      startDate: formatDate(startDate),
+      endDate: formatDate(endDate),
+      brandId: listBrands,
+      'inventoryInfo':{
+        gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
+        voucher_type: voucherType,
+        voucher_code: dataEvent.voucher_code,
+        voucher_description: dataEvent.voucher_description,
+        voucher_name: dataEvent.voucher_name,
+        voucher_price: dataEvent.voucher_price,
+        expiration_date: formatDate(expiredDay),
+        aim_coin: formProps.aim_coin,
+        items: listItems,
       },
-      'gameInfo': {
-        ...formProps,
-        ...{gameType},
-        listItems: listItems,
+      'gameInfoDTO': {
+        name: formProps.game_name,
+        gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
+        gameStartAt: formatDate(gameStartAt),
+        quiz: quizData,        
       },
+    };
+    
+    const dataImage = {
       bannerFile: banner,
       QRImage: qrImg,
       voucherImg: voucherImg,
-      listBrands: listBrands,
-    };
+    }
 
-    setDataEvent(data);
+    // setDataEvent(data);
     console.log(data);
 
     // delete form data
-    setIsEventForm(true);
-    formDataEvent.current.reset();
-    window.scrollTo(0, 0);
-    setShowNoti(true);
+
+    // setIsEventForm(true);
+    // formDataEvent.current.reset();
+    // window.scrollTo(0, 0);
+    // setShowNoti(true);
+    setTest(data);
+    createEventMutation.mutate(data);
+
   }
 
   const preventSubmit = (e) => {
@@ -147,9 +235,11 @@ const Event = () => {
   return(
     <div className='container w-full my-4'>
       <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
-        <Notification type={'success'} title={'Thành công'} content={'Thông tin đã được cập nhật'} close={closeNoti}/>
+        <Notification type={`${isError ? 'error' : 'success'}` } 
+            title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
       </div>
       <TitlePage title={"Đăng ký sự kiện"} />
+      <h5>{JSON.stringify(test)}</h5>
 
       <div className='container flex bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
         <form className="container" ref={formDataEvent} onSubmit={(e) => preventSubmit(e)}>    
@@ -161,13 +251,13 @@ const Event = () => {
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên sự kiện</h5>
                   <input type="text" className="input_text" placeholder="Tên" 
-                    name="event_name" defaultValue={dataEvent.eventInfo.event_name || "" }    required  />
+                    name="eventName" defaultValue={dataEvent.eventName || "" }    required  />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Số lượng vouchers</h5>
-                  <input type="number" className="input_text" placeholder="100"
-                    name="num_of_vouchers" value={numOfVouchers || ''} onChange={(e) => setNumOfVouchers(e.target.value)}  required  />
+                  <input type="number" className="input_text" placeholder="100" min={0}
+                    name="numberOfVouchers" value={numOfVouchers || ''} onChange={(e) => setNumOfVouchers(e.target.value)}  required  />
                 </div> 
   
               </div>
@@ -210,13 +300,13 @@ const Event = () => {
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên voucher</h5>
                   <input type="text" className="input_text" placeholder="Ten voucher" 
-                    name="voucher_name" defaultValue={dataEvent.eventInfo.voucher_name }   required  />
+                    name="voucher_name" defaultValue={dataEvent.voucher_name }   required  />
                 </div> 
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Mã voucher</h5>
                   <input type="text" className="input_text" placeholder="XXXXXX" 
-                    name="voucher_code" defaultValue={dataEvent.eventInfo.voucher_code }   required  />
+                    name="voucher_code" defaultValue={dataEvent.voucher_code }   required  />
                 </div>
   
               </div>
@@ -252,8 +342,8 @@ const Event = () => {
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Trị giá</h5>
-                  <input type="number" className="input_text" placeholder="100000VNĐ" 
-                    name="voucher_price" defaultValue={dataEvent.eventInfo.voucher_price }   required  />
+                  <input type="number" className="input_text" placeholder="VNĐ" 
+                    name="voucher_price" defaultValue={dataEvent.voucher_price }  min={10000} required  />
                 </div> 
   
                 <div className="flex flex-col px-2 py-2 grow">
@@ -266,7 +356,7 @@ const Event = () => {
               <div className="flex flex-col px-2 py-2 h-[200px]">
                 <h5 className="text-base font-semibold">Mô tả</h5>
                 <textarea type="text" className="input_text h-full" placeholder="Mô tả ngắn gọn về cách sử dụng voucher"
-                  name="voucher_description" defaultValue={dataEvent.eventInfo.voucher_description }   required />
+                  name="voucher_description" defaultValue={dataEvent.voucher_description }   required />
               </div>
   
               {/* QR Code image */}
@@ -331,39 +421,14 @@ const Event = () => {
               {/* Nội dung trò chơi */}
               <h2 className='text-heading3_semibold text-primary mt-8'>Phần nội dung trò chơi</h2>
               {gameType === 'Quizz' ? (
-                Array.from({ length: 10 }).map((_, i) => (
-                    <div className="flex flex-col px-2 py-2 mb-2" key={i}>
-                        <h5 className="text-base font-semibold ">Câu hỏi {i + 1}</h5>
-                        <input
-                            type="text"
-                            className="input_text"
-                            placeholder="Tên"
-                            name={`question${i + 1}`}
-                            defaultValue={dataEvent.gameInfo[`question${i + 1}`] }   
-                            required
-                        />
-
-                        <div className="flex gap-4">
-                            <div className="flex flex-col px-2 py-2 grow">
-                            <h5 className="text-base font-medium">Đáp án</h5>
-                            <input type="text" className="input_text" placeholder="Câu trả lời" 
-                              name={`${i + 1}_answer_1`} defaultValue={dataEvent.gameInfo[`${i + 1}_answer_1`] }    required  />
-                            </div>
-            
-                            <div className="flex flex-col px-2 py-2 grow">
-                            <h5 className="text-base font-medium">Trả lời 1</h5>
-                            <input type="text" className="input_text" placeholder="Câu trả lời" 
-                              name={`${i + 1}_answer_2`} defaultValue={dataEvent.gameInfo[`${i + 1}_answer_2`] }    required  />
-                            </div> 
-            
-                            <div className="flex flex-col px-2 py-2 grow">
-                            <h5 className="text-base font-medium">Trả lời 2</h5>
-                            <input type="text" className="input_text" placeholder="Câu trả lời" 
-                              name={`${i + 1}_answer_3`} defaultValue={dataEvent.gameInfo[`${i + 1}_answer_3`] }    required  />
-                            </div> 
-                        </div>
-                    </div>
-                ))
+                <>
+                  <div className="flex flex-col px-2 py-2 max-w-[424px]">
+                    <h5 className="text-base font-semibold">Thời gian bắt đầu chơi game</h5>
+                    <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
+                      selected={gameStartAt} minDate={new Date()}  onChange={(date) => setGameStartAt(date)}   />
+                  </div>
+                  <FormGame quizData={quizData} setQuizData={setQuizData} />
+                </>
               ) : (
                 <div className="flex flex-col px-2 py-2 mb-2">
                   <div className="flex flex-col px-2 py-2">
@@ -382,7 +447,7 @@ const Event = () => {
                   <div className="flex flex-col px-2 py-2 ">
                     <h5 className="text-base font-semibold ">Số lượng xu cần đạt để đổi voucher (Nếu có chọn item xu)</h5>
                     <input type="text" className="input_text max-w-[404px]" placeholder="" 
-                      name="aim_coin" defaultValue={""}  required  />
+                      name="aim_coin" defaultValue={dataEvent.gameInfoDTO?.aim_coin}  required  />
                   </div>
                   
                 </div>
