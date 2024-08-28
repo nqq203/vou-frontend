@@ -27,42 +27,6 @@ export default function AdminAccountManagement() {
   const [shortlistUsers, setShortlistUsers] = useState([]);
   const [fulllistUsers, setFulllistUsers] = useState([]);
 
-
-  const overview = [
-    {
-      icon: <FaSackDollar size={32} />,
-      name: 'My Balance',
-      value: '12,750',
-    }, 
-    {
-      icon: <FaHandHoldingDollar size={32} />,
-      name: 'Income',
-      value: '5,600',
-    },
-    {
-      icon: <Image
-              src="/icons/001-medical.svg"
-              alt="EXPENSE"
-              width={32}
-              height={32}
-              className="object-contain"
-            />,
-      name: 'Expense',
-      value: '3,460',
-    },
-    {
-      icon: <Image
-              src="/icons/003-saving.svg"
-              alt="total saving"
-              width={32}
-              height={32}
-              className="object-contain"
-            />,
-      name: 'Total Saving',
-      value: '7,920',
-    }
-  ]
-
   const header = [
     "STT",
     "Họ tên",
@@ -76,6 +40,42 @@ export default function AdminAccountManagement() {
     setShowNoti(false)
   }
 
+  const [listNumberOfUsers, setListNumberOfUsers] = useState([])
+  const [listOverview, setListOverview] = useState([0,0,0,0])
+  const overview = [
+    {
+      icon: <FaSackDollar size={32} />,
+      name: 'Tổng số tài khoản',
+      value: listOverview[0],
+    }, 
+    {
+      icon: <FaHandHoldingDollar size={32} />,
+      name: 'Tài khoản Active',
+      value:  listOverview[1],
+    },
+    {
+      icon: <Image
+              src="/icons/001-medical.svg"
+              alt="EXPENSE"
+              width={32}
+              height={32}
+              className="object-contain"
+            />,
+      name: 'Tài khoản Pending',
+      value:  listOverview[2],
+    },
+    {
+      icon: <Image
+              src="/icons/003-saving.svg"
+              alt="total saving"
+              width={32}
+              height={32}
+              className="object-contain"
+            />,
+      name: 'Tài khoản Inactive',
+      value:  listOverview[3],
+    }
+  ]
 
   const {isFetching, refetch} = useQuery(
     "fetch-all-users",
@@ -83,6 +83,9 @@ export default function AdminAccountManagement() {
     {
       onSuccess: (data) => {
         console.log(data.metadata);
+        let numberOfBrand = 0;
+        let numberOfAdmin = 0;
+        let numberOfPlayer = 0;
         const list = data.metadata.map((user,index) => {
           return {
             no: index+1,
@@ -104,6 +107,43 @@ export default function AdminAccountManagement() {
       },
     }
   )
+
+  const calculateStatistic = () => {
+    let numberOfBrand = 0;
+    let numberOfAdmin = 0;
+    let numberOfPlayer = 0;
+
+    let numberOfActive = 0;
+    let numberOfPending = 0;
+    let numberOfInactive = 0;
+    
+    if(fulllistUsers.length != 0){
+      fulllistUsers.map((user,index) => {
+        if(user.role === "BRAND"){
+          numberOfBrand++;
+        } else if(user.role === "ADMIN"){
+          numberOfAdmin++;
+        } else {
+          numberOfPlayer++;
+        }
+
+        if(user.status === "PENDING"){
+          numberOfPending++;
+        } else if(user.status === "ACTIVE"){
+          numberOfActive++;
+        } else {
+          numberOfInactive++;
+        }
+      })
+
+      setListOverview([fulllistUsers.length,numberOfActive,numberOfPending,numberOfInactive]);
+      setListNumberOfUsers([numberOfPlayer, numberOfBrand, numberOfAdmin]);
+    }
+  }
+
+  useEffect(()=> {
+    calculateStatistic();
+  },[fulllistUsers])
 
   const newRows = useMemo(() => {
     const nRows = shortlistUsers.map((row,index) => {
@@ -128,6 +168,7 @@ export default function AdminAccountManagement() {
   const [isOpenEditAccount, setIsOpenEditAccount] = useState(false)
   const [isOpenAddAccount, setIsOpenAddAccount] = useState(false)
   const [userInfo, setUserInfo] = useState(null);
+  // for updating info user
   useEffect(() => {
     refetch();
   },[isOpenAddAccount, isOpenEditAccount])
@@ -156,6 +197,7 @@ export default function AdminAccountManagement() {
     console.log(userInfo);
   }, [isOpenEditAccount])
 
+
   return (
     <div className='container w-full my-4'>
       <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
@@ -168,7 +210,7 @@ export default function AdminAccountManagement() {
       <TitlePage title={"Quản lí tài khoản"} />
 
       <AdminOverview overview={overview}/>
-      <AdminStatistic />
+      <AdminStatistic listNumUsers={listNumberOfUsers} />
 
       <div className='flex flex-col mt-5 '>
         <div className="flex items-center bg-white rounded-lg shadow-md p5 border border-gray-200">

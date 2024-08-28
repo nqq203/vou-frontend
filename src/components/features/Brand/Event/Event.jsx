@@ -12,18 +12,22 @@ import { MdOutlineArrowDropDown } from "react-icons/md";
 import Notification from "@components/common/Notification";
 import TitlePage from "@components/common/TitlePage";
 import FormGame from "./FormGame";
-import { callApiCreateEvent } from "@pages/api/event";
+import { callApiCreateEvent, callApiUploadEventImgs } from "@pages/api/event";
+import { convertInputToSave } from "@utils/date";
 
 
 const Event = () => {
-  const {push} = useRouter();
+  const formDataEvent = useRef(null);
+  const [dataEvent, setDataEvent] = useState({ gameInfoDTO: {},});
+
+  // Notification
+  const [showNoti, setShowNoti] = useState(false)
+  const [isError, setIsError] = useState(false);
+  const [notiMsg, setNotiMsg] = useState('');
 
   //Other Brands
   const listAvailableBrands = ['Grab','Katinat','BE','Vinfast'];
   const [listBrands, setListBrands] = useState([])
-  // List items game LAC XU
-  const listAvailableItems = ['Chó','Gà','Vịt','Mèo','Xu'];
-  const [listItems, setListItems] = useState([]);
 
   // Event
   const [banner, setBanner] = useState(undefined)
@@ -40,10 +44,24 @@ const Event = () => {
   const [gameType, setgameType] = useState(listGames[1])
   const [gameName, setGameName] = useState("");
 
+  // List items game LAC XU
+  const listAvailableItems = ['Chó','Gà','Vịt','Mèo','Xu'];
+  const [listItems, setListItems] = useState([]);
+
   
   const changeCategory = (state) => {
     setOpenCategory(!state);
   }
+
+  // Game quiz
+  const [gameStartAt, setGameStartAt] = useState("");
+  const [quizData, setQuizData] = useState(Array.from({ length: 10 }).map((_, i) => ({
+    question: dataEvent.gameInfoDTO[`question${i + 1}`] || '',
+    ans1: dataEvent.gameInfoDTO[`${i + 1}_answer_1`] || '',
+    ans2: dataEvent.gameInfoDTO[`${i + 1}_answer_2`] || '',
+    ans3: dataEvent.gameInfoDTO[`${i + 1}_answer_3`] || '',
+    correctAnswerIndex: 0,
+  })));
 
   // Voucher Type
   const listVoucherType = ['Online','Offline']
@@ -75,6 +93,7 @@ const Event = () => {
   }
 
   // Add items game
+  const [hasItemCoin, setHasItemCoin] = useState(false);
   const addItems = (item) => {
     let listItemsTemp = listItems;
     if(!listItemsTemp.includes(item)){
@@ -82,20 +101,16 @@ const Event = () => {
     } else {
       listItemsTemp = listItemsTemp.filter(it => it !== item)
     }
+    if(listItemsTemp.includes("Xu")){
+      setHasItemCoin(true);
+    } else {
+      setHasItemCoin(false);
+    }
     // setListItems(listItemsTemp);
     setListItems([1,2]);
-
   }
   
-  const formDataEvent = useRef(null);
-  const [dataEvent, setDataEvent] = useState({ gameInfoDTO: {},});
-
-   // Notification
-   const [showNoti, setShowNoti] = useState(false)
-   const [isError, setIsError] = useState(false);
-   const [notiMsg, setNotiMsg] = useState('');
-
-
+  
   const handleFormData = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
@@ -116,42 +131,55 @@ const Event = () => {
     });
   }
 
-  const formatDate = (date) => {
-    if (!date) return '';
-    const pad = (num) => String(num).padStart(2, '0');
-    const padMilliseconds = (num) => String(num).padStart(3, '0');
-    
-    const year = date.getUTCFullYear();
-    const month = pad(date.getUTCMonth() + 1);
-    const day = pad(date.getUTCDate());
-    const hours = pad(date.getUTCHours());
-    const minutes = pad(date.getUTCMinutes());
-    const seconds = pad(date.getUTCSeconds());
-    const milliseconds = padMilliseconds(date.getUTCMilliseconds());
-    
-    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+00:00`;
-  };
+  const resetForm = () => {
+    // reset form Game
+    formDataEvent.current.reset();
 
-  
-
-  const [gameStartAt, setGameStartAt] = useState(null);
-  const [quizData, setQuizData] = useState(Array.from({ length: 10 }).map((_, i) => ({
-    question: dataEvent.gameInfoDTO[`question${i + 1}`] || '',
-    ans1: dataEvent.gameInfoDTO[`${i + 1}_answer_1`] || '',
-    ans2: dataEvent.gameInfoDTO[`${i + 1}_answer_2`] || '',
-    ans3: dataEvent.gameInfoDTO[`${i + 1}_answer_3`] || '',
-    correctAnswerIndex: 0,
-  })));
+    setIsEventForm(true);
+    // reset form event
+    formDataEvent.current.reset();
+    setDataEvent({ gameInfoDTO: {},});
+    
+    setListItems([]);
+    setListBrands([]);
+    setQrImg(undefined);
+    setvoucherImg(undefined);
+    setNumOfVouchers(0);
+    setStartDate(null);
+    setEndDate(null);
+    setExpiredDay(null);
+    setGameName("");
+    setvoucherType(listVoucherType[0]);
+    setgameType(listGames[1]);
+    setQuizData(Array.from({ length: 10 }).map((_, i) => ({
+      question: dataEvent.gameInfoDTO[`question${i + 1}`] || '',
+      ans1: dataEvent.gameInfoDTO[`${i + 1}_answer_1`] || '',
+      ans2: dataEvent.gameInfoDTO[`${i + 1}_answer_2`] || '',
+      ans3: dataEvent.gameInfoDTO[`${i + 1}_answer_3`] || '',
+      correctAnswerIndex: 0,
+    })));
+    setGameStartAt("");
+    setHasItemCoin(false);
+    window.scrollTo(0, 0);
+}
 
   const createEventMutation = useMutation(
-    (data) => callApiCreateEvent(data),
+    // (data) => callApiCreateEvent(data),
+    async ({dataImgs, data}) => {
+      const newEvent = await callApiCreateEvent(data);
+      // const idEvent = 10;
+      // const eventImgs = await callApiUploadEventImgs(idEvent,dataImgs);
+      return {newEvent};
+    },
     {
       onSuccess: (data) => {
         console.log(data)
+        
+        resetForm();
+
         setIsError(false);
         setShowNoti(true);
         setNotiMsg("Cập nhật thông tin thành công");
-
       },
       onError: (error) => {
         const msgErr = error.response.data.message;
@@ -164,25 +192,68 @@ const Event = () => {
 
   const [test, setTest] = useState("");
 
+  const checkValidateData = (formProps) => {
+    // check validate data
+    if(dataEvent.eventName === "" || dataEvent.numberOfVouchers === "" || startDate === null || endDate === null ){
+      setIsError(true);
+      setShowNoti(true);
+      setNotiMsg("Các thông tin của phần Sự kiện còn thiếu!");
+      return false;
+    }
+
+    if(dataEvent.voucher_code === "" || dataEvent.voucher_description === "" || dataEvent.voucher_name === "" || dataEvent.voucher_price === "" ){
+      setIsError(true);
+      setShowNoti(true);
+      setNotiMsg("Các thông tin của phần Voucher còn thiếu!");
+      return false;
+    }
+
+    if(gameName === ""){
+      setIsError(true);
+      setShowNoti(true);
+      setNotiMsg("Tên game còn thiếu!");
+      return false;
+    }
+
+    if(gameType === "Lắc xu"){
+      if(listItems.length === 0){
+        setIsError(true);
+        setShowNoti(true);
+        setNotiMsg("Vui lòng chọn các vật phẩm của sự kiện!");
+        return false;
+      } else if(listItems.includes("Xu") && formProps.aim_coin === ""){
+        setIsError(true);
+        setShowNoti(true);
+        setNotiMsg("Vui lòng nhập số lượng Xu cần thiết để đổi voucher!");
+        return false;
+      }
+    } else {
+      if(gameStartAt === ""){
+        setIsError(true);
+        setShowNoti(true);
+        setNotiMsg("Ngày bắt đầu livestream chơi game còn thiếu!");
+        return false;
+      }
+    }
+
+    return true
+  }
+
 
   const sendData = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
-    console.log(formProps)
 
-    // check validate data
-    if(dataEvent.eventName === "" ){
-      setIsError(true);
-      setShowNoti(true);
-      setNotiMsg("Yêu cầu điền đầy đủ các trường thông tin");
+    const isValidData = checkValidateData(formProps);
+    if(!isValidData){
+      return;
     }
-
 
     const data = {
       eventName: dataEvent.eventName,
       numberOfVouchers: numOfVouchers,
-      startDate: formatDate(startDate),
-      endDate: formatDate(endDate),
+      startDate: convertInputToSave(startDate),
+      endDate: convertInputToSave(endDate),
       brandId: listBrands,
       'inventoryInfo':{
         gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
@@ -191,14 +262,14 @@ const Event = () => {
         voucher_description: dataEvent.voucher_description,
         voucher_name: dataEvent.voucher_name,
         voucher_price: dataEvent.voucher_price,
-        expiration_date: formatDate(expiredDay),
+        expiration_date: convertInputToSave(expiredDay),
         aim_coin: formProps.aim_coin,
         items: listItems,
       },
       'gameInfoDTO': {
-        name: formProps.game_name,
+        name: gameName,
         gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
-        gameStartAt: formatDate(gameStartAt),
+        gameStartAt: convertInputToSave(gameStartAt),
         quiz: quizData,        
       },
     };
@@ -212,15 +283,7 @@ const Event = () => {
     // setDataEvent(data);
     console.log(data);
 
-    // delete form data
-
-    // setIsEventForm(true);
-    // formDataEvent.current.reset();
-    // window.scrollTo(0, 0);
-    // setShowNoti(true);
-    setTest(data);
     createEventMutation.mutate(data);
-
   }
 
   const preventSubmit = (e) => {
@@ -231,7 +294,6 @@ const Event = () => {
     setShowNoti(false)
   }
 
-
   return(
     <div className='container w-full my-4'>
       <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
@@ -239,7 +301,7 @@ const Event = () => {
             title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
       </div>
       <TitlePage title={"Đăng ký sự kiện"} />
-      <h5>{JSON.stringify(test)}</h5>
+      {/* <h5>{JSON.stringify(test)}</h5> */}
 
       <div className='container flex bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
         <form className="container" ref={formDataEvent} onSubmit={(e) => preventSubmit(e)}>    
@@ -397,7 +459,7 @@ const Event = () => {
                           <ul className="py-1 " role="none">
                               {listGames.map((item) => (
                               <li key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
-                                  role="menuitem" value={item} onClick={(e) => {setgameType(e.target.textContent); setOpenCategory(false);}}
+                                  role="menuitem" value={item} onClick={(e) => {setgameType(e.target.textContent); setOpenCategory(false); window.scrollTo(0,0);}}
                               > 
                                   {item}
                               </li>
@@ -446,8 +508,8 @@ const Event = () => {
 
                   <div className="flex flex-col px-2 py-2 ">
                     <h5 className="text-base font-semibold ">Số lượng xu cần đạt để đổi voucher (Nếu có chọn item xu)</h5>
-                    <input type="text" className="input_text max-w-[404px]" placeholder="" 
-                      name="aim_coin" defaultValue={dataEvent.gameInfoDTO?.aim_coin}  required  />
+                    <input type="number" className={`${hasItemCoin ? "input_text" : "input_text_disabled"}  max-w-[404px]`} placeholder="" disabled={!hasItemCoin}
+                      name="aim_coin" min={0} defaultValue={dataEvent.gameInfoDTO?.aim_coin}  required  />
                   </div>
                   
                 </div>

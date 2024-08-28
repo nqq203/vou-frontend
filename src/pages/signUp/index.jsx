@@ -54,7 +54,7 @@ const SignUpPage = () => {
     const submitHandler = async (e) => {
         console.log("Submit: ", account);
         if(account.username === "" || account.email === "" || account.password === "" || account.phoneNumber === ""){
-            setError("Some fields are missing");
+            setError("Vui lòng điền đầy đủ các ô nhập liệu");
             setShowNoti(true);
             return;
         }
@@ -62,12 +62,12 @@ const SignUpPage = () => {
         const accountRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
 
         if (!accountRegex.test(account.password)) {
-            setError("Password must includes upper and lower case letters, number, symbol (e.g. !@#$)");
+            setError("Mật khẩu bao gồm 8 ký tự trở lên bao gồm chữ hoa, chữ thường, số, ký hiệu (ví dụ: !@#$)");
             setShowNoti(true);
             return;
         }
         if (account.password.length < 8) {
-            setError("Password length must greater than 8 characters");
+            setError("Mật khẩu phải lớn hơn 8 kí tự");
             setShowNoti(true);
             return;
         }

@@ -10,6 +10,11 @@ export const callApiSignUp = async (userData) => {
     return data;
 }
 
+export const callApiChangePassword = async (newData) => {
+    const {data} = await api.post(`/auth/change-password`,newData);
+    return data;
+}
+
 export const callApiUpdateAccount = async (idUser,updatedData) => {
     const {data} = await api.put(`/users/${idUser}`,updatedData);
     return data;
@@ -17,15 +22,13 @@ export const callApiUpdateAccount = async (idUser,updatedData) => {
 
 export const callApiUpdateAccountImage = async (idUser,avatar) => {
     const formData = new FormData();
-    console.log("Ava:" , avatar instanceof File)
     formData.append('avatar',avatar);
-    // formData.append('_method', 'PATCH');
 
     const {data} = await api.patch(`/users/${idUser}/avatar`,
         formData,
         {
             headers: {
-                'Content-Type': 'multipart/form-data', // This is optional, can be omitted
+                'Content-Type': 'multipart/form-data', 
             },
         }
     );
@@ -41,3 +44,4 @@ export const callApiGetAllUser = async (idUser) => {
     const {data} = await api.get(`/users?id_user=${idUser}`);
     return data;
 }
+

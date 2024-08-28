@@ -40,7 +40,7 @@ const PieChart = ({data}) => {
     });
 
     return () => myChart.destroy();  // Cleanup chart instance on component unmount
-  }, []);
+  }, [data]);
 
   return <canvas ref={chartRef} id="myPieChart"></canvas>;
 };

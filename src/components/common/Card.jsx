@@ -2,12 +2,12 @@
 import { useRouter } from "next/navigation"
 import Tag from "./Tag";
 
-const Card = ({name, date, vouchers,status}) => {
+const Card = ({id,name, date, vouchers,status}) => {
   const {push} = useRouter();
 
   const viewDetailEvent = () => {
-    // redirect
-    push(`/brand/event/eventDetail?id=abc&status=${status}`);
+    // redirect: fix id
+    push(`/brand/event/eventDetail?id=${id}&s=${status}`);
   }
 
   return (

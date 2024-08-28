@@ -9,6 +9,7 @@ import { useMutation } from "react-query";
 import { callApiUpdateAccountImage,callApiUpdateAccount } from "@pages/api/user";
 import { updateStates } from "@redux/auth";
 import { useDispatch } from "react-redux";
+import ChangePassForm from "@components/features/Brand/Account/ChangePassForm";
 
 
 const AdminProfile = () => {
@@ -26,7 +27,11 @@ const AdminProfile = () => {
     const hiddenFileInput = useRef(null);
     const formAccount = useRef(null);
 
-    // const [openCategory, setOpenCategory] = useState(false)
+    // Change password form
+    const [showChangePassForm, setShowChangePassForm] = useState(false);
+    function handleCloseForm() {
+      setShowChangePassForm(false);
+    }
 
     // Notification
     const [showNoti, setShowNoti] = useState(false)
@@ -130,6 +135,7 @@ const AdminProfile = () => {
 
     return (
       <div className='container w-full my-4'>
+        {showChangePassForm && <ChangePassForm handleClose={handleCloseForm}/>}
         <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
           <Notification type={`${isError ? 'Error' : 'Success'}` } 
               title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
@@ -226,9 +232,9 @@ const AdminProfile = () => {
   
               
 
-              <Link href={'#'} className="flex flex-col px-2 py-2 min-w-[424px] justify-center">
+              <div onClick={() => setShowChangePassForm(true)} className="flex flex-col px-2 py-2 min-w-[424px] justify-center">
                 <h5 className="text-base text-primary font-semibold underline">Đổi mật khẩu</h5>
-              </Link>
+              </div>
   
               <div className="primary_btn w-[200px] mt-8" onClick={submitFormData}>Lưu thông tin</div>
           </form>

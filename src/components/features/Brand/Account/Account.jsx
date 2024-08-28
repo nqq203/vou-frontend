@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { updateStates } from "@redux/auth";
+import ChangePassForm from "./ChangePassForm";
 
 const Account = () => {
   const data = useSelector(state => state.auth)
@@ -22,6 +23,12 @@ const Account = () => {
   
   const hiddenFileInput = useRef(null);
   const formAccount = useRef(null);
+
+  // Change password form
+  const [showChangePassForm, setShowChangePassForm] = useState(false);
+  function handleCloseForm() {
+    setShowChangePassForm(false);
+  }
 
   // Notification
   const [showNoti, setShowNoti] = useState(false)
@@ -72,7 +79,6 @@ const Account = () => {
   const closeNoti = () => {
     setShowNoti(false)
   }  
-
 
   const updateAccountMutation = useMutation(
     async ({updatedData, avatar}) => {
@@ -126,8 +132,6 @@ const Account = () => {
       field,
     }
     
-    // Update redux store
-    
     updateAccountMutation.mutate({ updatedData: updateData, avatar: avatar });
   }
 
@@ -135,6 +139,7 @@ const Account = () => {
 
   return (
     <div className='container w-full my-4'>
+      {showChangePassForm && <ChangePassForm handleClose={handleCloseForm}/>}
       <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
         <Notification type={`${isError ? 'error' : 'success'}` } 
             title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
@@ -241,9 +246,9 @@ const Account = () => {
               </div>
             </div>
 
-            <Link href={'#'} className="flex flex-col px-2 py-2 min-w-[424px] justify-center">
+            <div onClick={() => setShowChangePassForm(true)} className="flex flex-col px-2 py-2 min-w-[424px] justify-center">
                 <h5 className="text-base text-primary font-semibold underline">Đổi mật khẩu</h5>
-            </Link>
+            </div>
             <div className="primary_btn w-[200px] mt-8" onClick={submitFormData}>Lưu thông tin</div>
         </form>
       </div>
