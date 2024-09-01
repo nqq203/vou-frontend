@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useCallback } from "react";
 import { useQuery,useMutation } from "react-query";
+import { useSelector } from "react-redux";
 
 import ImageUploader from "@components/common/ImageUploader";
 import Tag from "@components/common/Tag";
@@ -24,6 +25,8 @@ const EventDetail = () => {
   const {push} = useRouter();
   const searchParams = useSearchParams();
   const status = searchParams.get('s') || "active";
+  const eventStore = useSelector(state=> state.event);
+
   
   //Event
   const formDataEvent = useRef(null);
@@ -34,7 +37,8 @@ const EventDetail = () => {
   const [notiMsg, setNotiMsg] = useState('');
 
   //Other Brands
-  const listAvailableBrands = ['Grab','Katinat','BE','Vinfast'];
+  // const [listAvailableBrands, setListAvailableBrands] = useState(eventStore.listAvailableBrands)
+  const listAvailableBrands = eventStore.listAvailableBrands;
   const [listBrands, setListBrands] = useState([])
 
   // Event
@@ -44,7 +48,7 @@ const EventDetail = () => {
   const [numOfVouchers, setNumOfVouchers] = useState(dataEvent.numberOfVouchers);
   const [startDate, setStartDate] = useState(convertDataToOutput(dataEvent.startDate));
   const [endDate, setEndDate] = useState(convertDataToOutput(dataEvent.endDate));
-  const [expiredDay, setExpiredDay] = useState(convertDataToOutput(dataEvent.inventoryDetailDTO?.expiration_date));
+  const [expiredDay, setExpiredDay] = useState(convertDataToOutput(dataEvent.inventoryInfo?.expiration_date));
   const [eventName, setEventName] = useState("")
 
   // Game 
@@ -60,8 +64,9 @@ const EventDetail = () => {
   const [voucherPrice, setVoucherPrice] = useState("")
 
   // List items game LAC XU
-  const listAvailableItems = ['Chó','Gà','Vịt','Mèo','Xu'];
+  const listAvailableItems = eventStore.listAvailableItems;
   const [listItems, setListItems] = useState([]);
+  const [hasItemCoin, setHasItemCoin] = useState(false);
 
   // Game quiz
   const [gameStartAt, setGameStartAt] = useState(dataEvent.gameInfoDTO?.gameStartAt);
@@ -70,7 +75,7 @@ const EventDetail = () => {
   // Voucher Type
   const listVoucherType = ['Online','Offline']
   const [openCategoryVoucher, setOpenCategoryVoucher] = useState(false)
-  const [voucherType, setvoucherType] = useState(dataEvent.inventoryDetailDTO?.voucher_type)
+  const [voucherType, setvoucherType] = useState(dataEvent.inventoryInfo?.voucher_type)
   
   const changeCategoryVoucher = (state) => {
     if(status !== "done"){
@@ -90,7 +95,7 @@ const EventDetail = () => {
         setNumOfVouchers(data.metadata?.numberOfVouchers);
         setStartDate(convertDataToOutput(data.metadata?.startDate));
         setEndDate(convertDataToOutput(data.metadata?.endDate));
-        setExpiredDay(convertDataToOutput(data.metadata?.inventoryDetailDTO?.expiration_date));
+        setExpiredDay(convertDataToOutput(data.metadata?.inventoryInfo?.expiration_date));
         
         setgameType(data.metadata?.gameInfoDTO?.gameType === "shake-game" ? "Lắc xu" : "Quizz");
         setGameName(data.metadata?.gameInfoDTO?.name);
@@ -102,17 +107,24 @@ const EventDetail = () => {
           ans3: data.metadata?.gameInfoDTO[`${i + 1}_answer_3`] || '',
           correctAnswerIndex: 0,
         })));
-        setvoucherType(data.metadata?.inventoryDetailDTO?.voucher_type);
-        setVoucherCode(data.metadata?.inventoryDetailDTO?.voucher_code);
-        setVoucherDescription(data.metadata?.inventoryDetailDTO?.voucher_description);
-        setVoucherName(data.metadata?.inventoryDetailDTO?.voucher_name);
-        setVoucherPrice(data.metadata?.inventoryDetailDTO?.voucher_price);
+        setvoucherType(data.metadata?.inventoryInfo?.voucher_type);
+        setVoucherCode(data.metadata?.inventoryInfo?.voucher_code);
+        setVoucherDescription(data.metadata?.inventoryInfo?.voucher_description);
+        setVoucherName(data.metadata?.inventoryInfo?.voucher_name);
+        setVoucherPrice(data.metadata?.inventoryInfo?.voucher_price);
 
-        // setBanner();
-        // setvoucherImg();
-        // setQrImg();
-        // setListBrands();
-        // setListItems();
+        setBanner(data.metadata?.imageUrl);
+        setvoucherImg(data.metadata?.inventoryInfo?.imageUrl);
+        setQrImg(data.metadata?.inventoryInfo?.qrCode);
+        const dataItems = data.metadata?.inventoryInfo?.items;
+        setListItems(dataItems.map(item => {
+          if(item.idItem === 5) setHasItemCoin(true);
+          return item.idItem;
+        }))
+        
+
+        const dataBrand = data.metadata?.brandId
+        setListBrands(dataBrand.map(brand => brand.idBrand));
       },
       onError: (error) => {
         const msgErr = error.response.data.message;
@@ -129,8 +141,8 @@ const EventDetail = () => {
   },[idEvent])
 
   // useEffect(() => {
-
-  // },[dataEvent])
+  //   console.log("Reload di")
+  // },[listBrands])
 
 
   const updateEventMutation = useMutation(
@@ -155,6 +167,8 @@ const EventDetail = () => {
   // Change Event to Game
   const [isEventForm, setIsEventForm] = useState(true);
   const changeForm = (state) => {
+    console.log(listItems);
+    console.log(hasItemCoin)
     setIsEventForm(!state);
     window.scrollTo(0, 0);
   }
@@ -162,10 +176,10 @@ const EventDetail = () => {
   // Add brand collab
   const addBrand = (brand) => {
     let listBrandsTemp = listBrands;
-    if(!listBrandsTemp.includes(brand)){
-      listBrandsTemp.push(brand)
+    if(!listBrandsTemp.includes(brand.idUser)){
+      listBrandsTemp.push(brand.idUser)
     } else {
-      listBrandsTemp = listBrandsTemp.filter(item => item !== brand)
+      listBrandsTemp = listBrandsTemp.filter(item => item !== brand.idUser);
     }
     setListBrands(listBrandsTemp);
   }
@@ -173,11 +187,17 @@ const EventDetail = () => {
   // Add items game
   const addItems = (item) => {
     let listItemsTemp = listItems;
-    if(!listItemsTemp.includes(item)){
-      listItemsTemp.push(item)
+    if(!listItemsTemp.includes(item.idItem)){
+      listItemsTemp.push(item.idItem)
     } else {
-      listItemsTemp = listItemsTemp.filter(it => it !== item)
+      listItemsTemp = listItemsTemp.filter(it => it !== item.idItem)
     }
+    if(listItemsTemp.includes(5)){ // include "Xu" item
+      setHasItemCoin(true);
+    } else {
+      setHasItemCoin(false);
+    }
+
     setListItems(listItemsTemp);
   }
 
@@ -241,11 +261,11 @@ const EventDetail = () => {
     // ...dataEvent,
     const data = {
       eventName: eventName,
-      numberOfVouchers: numOfVouchers,
+      numberOfVouchers: parseInt(numOfVouchers),
       startDate: startDate,
       endDate: endDate,
       brandId: listBrands,
-      'inventoryDetailDTO':{
+      'inventoryInfo':{
         gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
         voucher_type: voucherType,
         voucher_code: voucherCode,
@@ -360,9 +380,10 @@ const EventDetail = () => {
                 <h5 className="text-base font-semibold">Hợp tác với brand khác (Nếu có)</h5>
                 <div className="flex gap-4 mt-2">
                   {listAvailableBrands.map((brand,index) => (
-                    <CheckBox key={index} label={brand} 
+                    <CheckBox key={`${brand.idUser}-${listBrands.includes(brand.idUser)}`}
+                      label={brand.fullName} image={brand.avatarUrl}
                       disable={status === 'done'}
-                      checked={listBrands.includes(brand)} 
+                      checked={listBrands.includes(brand.idUser)} 
                       onClick={() => addBrand(brand)}
                     />
                   ))}
@@ -488,8 +509,9 @@ const EventDetail = () => {
                     <span className="text-medium font-light italic tex-gray-700">Hệ thống sẽ cho phép tạo ra các vật phẩm sau</span>
                     <div className="flex gap-4 mt-2">
                       {listAvailableItems.map((item,index) => (
-                        <CheckBox key={index} label={item} 
-                          checked={listItems.includes(item)} 
+                        <CheckBox key={item.idItem} label={item.itemName} 
+                          checked={listItems.includes(item.idItem)} 
+                          image={item.imageUrl}
                           onClick={() => addItems(item)}
                         />
                       ))}
@@ -498,8 +520,9 @@ const EventDetail = () => {
 
                   <div className="flex flex-col px-2 py-2 ">
                     <h5 className="text-base font-semibold ">Số lượng xu cần đạt để đổi voucher (Nếu có chọn item xu)</h5>
-                    <input disabled={status === 'done'} type="text" className="input_text max-w-[404px]" placeholder="" 
-                      name="aim_coin" defaultValue={dataEvent.inventoryDetailDTO?.aim_coin}  required  />
+                    <input disabled={status === 'done' || (!hasItemCoin)} type="text" 
+                    className="input_text max-w-[404px]" placeholder="" 
+                      name="aim_coin" defaultValue={dataEvent.inventoryInfo?.aim_coin}  required  />
                   </div>
                   
                 </div>

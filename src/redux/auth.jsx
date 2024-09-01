@@ -19,6 +19,7 @@ const auth = createSlice({
 			for (const key in state) {
 				state[key] = null;
 			}
+			localStorage.clear();
 		},
 
 		updateStates(state,action) {

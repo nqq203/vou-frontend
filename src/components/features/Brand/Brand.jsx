@@ -4,16 +4,22 @@ import Card from '@components/common/Card'
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { logout } from '@redux/auth';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TitlePage from '@components/common/TitlePage';
 import { useQuery } from 'react-query';
 import { callApiGetMyEvents } from '@pages/api/event';
 import Notification from '@components/common/Notification';
-import { convertDataToOutputString } from '@utils/date';
+import { convertDataToOutputString, compareDates } from '@utils/date';
+import { updateStatesEvent } from '@redux/event';
+import { callApiGetAllBrands } from '@pages/api/brand';
+import { callApiGetItems } from '@pages/api/item';
 
 const Brand = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [listEvents, setListEvents] = useState([])
+  const brandId = useSelector(state => state.auth.idUser);
+
 
   // Notification
   const [showNoti, setShowNoti] = useState(false)
@@ -26,10 +32,10 @@ const Brand = () => {
 
   const {isFetching, refetch} = useQuery(
     "fetch-my-events",
-    callApiGetMyEvents,
+    () => callApiGetMyEvents(brandId),
     {
       onSuccess: (data) => {
-        console.log(data.metadata);
+        console.log(data);
         setListEvents(data.metadata);
       },
       onError: (error) => {
@@ -38,12 +44,39 @@ const Brand = () => {
         setShowNoti(true);
         setNotiMsg(msgErr);
       },
+    },
+    
+  )
+  
+
+  const {isFetching: isFetchingItemsAndBrands, refetch: refetchItemsAndBrands} = useQuery(
+    "fetch-items-brands",
+    async () => {
+      const brands = await callApiGetAllBrands();
+      const items = await callApiGetItems();
+      return {brands,items}
+    },
+    {
+      onSuccess: (data) => {
+        console.log(data);
+        const dataBrandCoop = data.brands?.metadata;
+        const listAvailableBrands = dataBrandCoop.filter(brand => brand.idUser !== brandId);
+        const listAvailableItems = data.items?.metadata;
+        dispatch(updateStatesEvent({listAvailableBrands,listAvailableItems}))        
+      },
+      onError: (error) => {
+        // Handle error and log the appropriate message
+        console.log(error.response?.data?.message || error.message);
+      },
+      staleTime: Infinity, // Data will never be considered stale
+      cacheTime: Infinity, // Data will be cached indefinitely      
     }
   )
+  // useEffect(()=> {
 
-  useEffect(()=> {
+  // },[listEvents])
 
-  },[listEvents])
+  
 
 
   return (
@@ -58,11 +91,13 @@ const Brand = () => {
       <div className="container flex flex-wrap gap-4 my-4">
       {
         listEvents.map(event => {
+          const status = compareDates(event.startDate, event.endDate);
           return <Card id={event.idEvent} key={event.idEvent}
             name={event.eventName}
             date={convertDataToOutputString(event.startDate) + " - " + convertDataToOutputString(event.endDate)}
             vouchers={event.numberOfVouchers}
-            status={event.status} 
+            status={status} 
+            bannerImg={event.imageUrl}
             />
         })
       }

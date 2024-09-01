@@ -13,12 +13,19 @@ import Notification from "@components/common/Notification";
 import TitlePage from "@components/common/TitlePage";
 import FormGame from "./FormGame";
 import { callApiCreateEvent, callApiUploadEventImgs } from "@pages/api/event";
+import { callApiGetItems } from "@pages/api/item";
 import { convertInputToSave } from "@utils/date";
+import { useQuery } from "react-query";
+import { callApiGetAllBrands } from "@pages/api/brand";
+import { useSelector } from "react-redux";
 
 
 const Event = () => {
   const formDataEvent = useRef(null);
   const [dataEvent, setDataEvent] = useState({ gameInfoDTO: {},});
+  const idBrand = useSelector(state => state.auth.idUser);
+  const eventStore = useSelector(state=> state.event);
+
 
   // Notification
   const [showNoti, setShowNoti] = useState(false)
@@ -26,8 +33,8 @@ const Event = () => {
   const [notiMsg, setNotiMsg] = useState('');
 
   //Other Brands
-  const listAvailableBrands = ['Grab','Katinat','BE','Vinfast'];
-  const [listBrands, setListBrands] = useState([])
+  const listAvailableBrands = eventStore.listAvailableBrands;
+  const [listBrands, setListBrands] = useState([idBrand])
 
   // Event
   const [banner, setBanner] = useState(undefined)
@@ -45,7 +52,7 @@ const Event = () => {
   const [gameName, setGameName] = useState("");
 
   // List items game LAC XU
-  const listAvailableItems = ['Chó','Gà','Vịt','Mèo','Xu'];
+  const listAvailableItems = eventStore.listAvailableItems;
   const [listItems, setListItems] = useState([]);
 
   
@@ -64,7 +71,7 @@ const Event = () => {
   })));
 
   // Voucher Type
-  const listVoucherType = ['Online','Offline']
+  const listVoucherType = ['online','offline']
   const [openCategoryVoucher, setOpenCategoryVoucher] = useState(false)
   const [voucherType, setvoucherType] = useState(listVoucherType[0])
   
@@ -83,31 +90,29 @@ const Event = () => {
   // Add brand collab
   const addBrand = (brand) => {
     let listBrandsTemp = listBrands;
-    if(!listBrandsTemp.includes(brand)){
-      listBrandsTemp.push(brand)
+    if(!listBrandsTemp.includes(brand.idUser)){
+      listBrandsTemp.push(brand.idUser)
     } else {
-      listBrandsTemp = listBrandsTemp.filter(item => item !== brand)
+      listBrandsTemp = listBrandsTemp.filter(item => item !== brand.idUser);
     }
-    // setListBrands(listBrandsTemp);
-    setListBrands([1]);
+    setListBrands(listBrandsTemp);
   }
 
   // Add items game
   const [hasItemCoin, setHasItemCoin] = useState(false);
   const addItems = (item) => {
     let listItemsTemp = listItems;
-    if(!listItemsTemp.includes(item)){
-      listItemsTemp.push(item)
+    if(!listItemsTemp.includes(item.idItem)){
+      listItemsTemp.push(item.idItem)
     } else {
-      listItemsTemp = listItemsTemp.filter(it => it !== item)
+      listItemsTemp = listItemsTemp.filter(it => it !== item.idItem)
     }
-    if(listItemsTemp.includes("Xu")){
+    if(listItemsTemp.includes(5)){ // include "Xu" item
       setHasItemCoin(true);
     } else {
       setHasItemCoin(false);
     }
-    // setListItems(listItemsTemp);
-    setListItems([1,2]);
+    setListItems(listItemsTemp);
   }
   
   
@@ -115,6 +120,8 @@ const Event = () => {
     const formData = new FormData(formDataEvent.current);
     const formProps = Object.fromEntries(formData);
     console.log(formProps)
+    console.log("Brands: ", listBrands);
+    console.log("Brands: ", listItems);
 
     setDataEvent((prevDataEvent) => {
       if(isEventForm){
@@ -142,6 +149,7 @@ const Event = () => {
     
     setListItems([]);
     setListBrands([]);
+    setBanner(undefined);
     setQrImg(undefined);
     setvoucherImg(undefined);
     setNumOfVouchers(0);
@@ -162,14 +170,15 @@ const Event = () => {
     setHasItemCoin(false);
     window.scrollTo(0, 0);
 }
-
+  
   const createEventMutation = useMutation(
-    // (data) => callApiCreateEvent(data),
-    async ({dataImgs, data}) => {
+    async (data) => {
       const newEvent = await callApiCreateEvent(data);
-      // const idEvent = 10;
-      // const eventImgs = await callApiUploadEventImgs(idEvent,dataImgs);
-      return {newEvent};
+      const idEvent = newEvent.metadata?.idEvent;
+      const images = [banner,qrImg,voucherImg];
+      console.log("imgae: ", images);
+      const eventImg = await callApiUploadEventImgs(idEvent,images)
+      return {newEvent,eventImg}
     },
     {
       onSuccess: (data) => {
@@ -251,10 +260,11 @@ const Event = () => {
 
     const data = {
       eventName: dataEvent.eventName,
-      numberOfVouchers: numOfVouchers,
+      numberOfVouchers: parseInt(numOfVouchers),
       startDate: convertInputToSave(startDate),
       endDate: convertInputToSave(endDate),
       brandId: listBrands,
+      createdBy: idBrand,
       'inventoryInfo':{
         gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
         voucher_type: voucherType,
@@ -282,6 +292,7 @@ const Event = () => {
 
     // setDataEvent(data);
     console.log(data);
+    console.log(dataImage)
 
     createEventMutation.mutate(data);
   }
@@ -347,9 +358,9 @@ const Event = () => {
               <div className="flex flex-col px-2 py-2">
                 <h5 className="text-base font-semibold">Hợp tác với brand khác (Nếu có)</h5>
                 <div className="flex gap-4 mt-2">
-                  {listAvailableBrands.map((brand,index) => (
-                    <CheckBox key={index} label={brand} 
-                      checked={listBrands.includes(brand)} onClick={() => addBrand(brand)}
+                  {listAvailableBrands?.map((brand,index) => (
+                    <CheckBox key={index} label={brand.fullName} image={brand.avatarUrl}
+                      checked={listBrands.includes(brand.idUser)} onClick={() => addBrand(brand)}
                     />
                   ))}
                 </div>
@@ -496,10 +507,11 @@ const Event = () => {
                   <div className="flex flex-col px-2 py-2">
                     <h5 className="text-base font-semibold">Chọn vật phẩm cho game</h5>
                     <span className="text-medium font-light italic tex-gray-700">Hệ thống sẽ cho phép tạo ra các vật phẩm sau</span>
-                    <div className="flex gap-4 mt-2">
+                    <div className="flex gap-6 mt-2">
                       {listAvailableItems.map((item,index) => (
-                        <CheckBox key={index} label={item} 
-                          checked={listItems.includes(item)} 
+                        <CheckBox key={index} label={item.itemName} 
+                          checked={listItems.includes(item.idItem)} 
+                          image={item.imageUrl}
                           onClick={() => addItems(item)}
                         />
                       ))}

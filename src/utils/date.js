@@ -33,3 +33,42 @@ export const convertDataToOutputString = (dateString) => {
 
   return formattedDate;
 };
+
+// Return number meaning:
+//  0 : active
+//  -1: done
+//  1: pending
+export const compareDates = (startDate,endDate) => {
+  const today = new Date();
+  console.log(today)
+  const eventStartDate = new Date(startDate);
+  const eventEndDate = new Date(endDate);
+
+  const dayStart = eventStartDate.getDate();
+  const monthStart = eventStartDate.getMonth();
+  const yearStart = eventStartDate.getFullYear();
+
+  const dayEnd = eventEndDate.getDate();
+  const monthEnd = eventEndDate.getMonth();
+  const yearEnd = eventEndDate.getFullYear();
+
+  const dayToday = today.getDate();
+  const monthToday = today.getMonth();
+  const yearToday = today.getFullYear();
+
+  // if (year1 < year2 || (year1 === year2 && month1 < month2) || (year1 === year2 && month1 === month2 && day1 < day2)) {
+  //   return "done";
+  // } else if (year1 > year2 || (year1 === year2 && month1 > month2) || (year1 === year2 && month1 === month2 && day1 > day2)) {
+  //   return "pending";
+  // }
+  //   return "active";
+
+  if(yearToday < yearStart || (yearToday === yearStart && monthToday < monthStart) 
+    || (yearToday === yearStart && monthToday < monthStart && dayToday < dayStart) ){
+      return "pending";
+  } else if(yearToday > yearEnd || (yearToday === yearEnd && monthToday > monthEnd) 
+    || (yearToday === yearEnd && monthToday < monthEnd && dayToday > dayEnd) ){
+      return "done";
+  }
+  return "active";
+}

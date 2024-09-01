@@ -11,8 +11,12 @@ import { useDispatch } from "react-redux";
 import { updateStates } from "@redux/auth";
 import ChangePassForm from "./ChangePassForm";
 
+import dynamic from "next/dynamic";
+const Map = dynamic(()  => import("@components/common/Map"),{ssr: false})
+
 const Account = () => {
   const data = useSelector(state => state.auth)
+  console.log(data);
   const dispatch = useDispatch();
   const listCategory = ['Đồ ăn', 'Vận chuyển', 'Mỹ phẩm', 'Thức uống']
   const [field, setField] = useState(data.field);
@@ -99,14 +103,15 @@ const Account = () => {
         // Update redux
         // dispatch(updateStates(data.updatedAccount.metadata));
         const avatar = data.updatedAva?.metadata;
-        if(avatar !== null){
+        if(data.updatedAva != null){
           const updatedData = {
             ...(data.updatedAccount.metadata),
             avatarUrl: avatar
           };
-          console.log(updatedData);
+          console.log("Update: ", updatedData);
           dispatch(updateStates(updatedData));
         } else {
+          console.log("No new ava: ",data.updatedAccount.metadata )
           dispatch(updateStates(data.updatedAccount.metadata));
         }
       },
@@ -127,18 +132,32 @@ const Account = () => {
     // parseFloat(formProps.longitude) + 0.0001
     const updateData = {
       ...formProps,
-      longitude: parseFloat(formProps.longitude) ,
-      latitude: parseFloat(formProps.latitude) ,
+      longitude: parseFloat(location.longitude) ,
+      latitude: parseFloat(location.latitude) ,
+      address: location.address,
       field,
     }
     
     updateAccountMutation.mutate({ updatedData: updateData, avatar: avatar });
   }
 
-  
+  const [showMap, setShowMap] = useState(false)
+  const [location, setLocation] = useState({
+    longitude: brandInfo.longitude || 106.68194889934966, 
+    latitude: brandInfo.latitude || 10.762850154401937,
+    address: brandInfo.address || "Đại học Khoa học Tự nhiên",
+  })
+  const closeLocationForm = () => {
+    setShowMap(false);
+    console.log(location)
+  }  
 
   return (
     <div className='container w-full my-4'>
+      {showMap && <Map location={location} 
+        editLocation={setLocation}
+        handleClose={closeLocationForm} />
+      }
       {showChangePassForm && <ChangePassForm handleClose={handleCloseForm}/>}
       <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
         <Notification type={`${isError ? 'error' : 'success'}` } 
@@ -231,19 +250,21 @@ const Account = () => {
 
             <div className="flex flex-col px-2 py-2">
               <h5 className="text-base font-semibold">Địa chỉ</h5>
-              <input type="text" className="input_text" placeholder="227 Nguyễn Văn Cừ" defaultValue={brandInfo.address} name="address" required onChange={(e) => setValue(e)} />
+              <input type="text" className="input_text_disabled" placeholder="227 Nguyễn Văn Cừ" value={location.address} name="address" required onChange={(e) => setValue(e)} />
             </div>
 
             <div className="flex gap-4">
               <div className="flex flex-col px-2 py-2 grow">
                 <h5 className="text-base font-semibold">Kinh độ</h5>
-                <input type="number" className="input_text" placeholder="23.01" min={0.1} defaultValue={brandInfo.longitude} name="longitude" required onChange={(e) => setValue(e)} />
+                <input type="number" className="input_text" placeholder="23.01" value={location.longitude} name="longitude" required onChange={(e) => setValue(e)} />
               </div>
 
-              <div className="flex flex-col px-2 py-2 min-w-[424px]">
+              <div className="flex flex-col px-2 py-2 grow">
                 <h5 className="text-base font-semibold">Vĩ độ</h5>
-                <input type="number" className="input_text" placeholder="100.01" min={0.1} defaultValue={brandInfo.latitude} name="latitude" required onChange={(e) => setValue(e)} />
+                <input type="number" className="input_text" placeholder="100.01" value={location.latitude} name="latitude" required onChange={(e) => setValue(e)} />
               </div>
+              <div className="outline_btn max-w-[200px] h-[36px] mt-11" onClick={() => setShowMap(true)}>Chọn vị trí</div>
+
             </div>
 
             <div onClick={() => setShowChangePassForm(true)} className="flex flex-col px-2 py-2 min-w-[424px] justify-center">

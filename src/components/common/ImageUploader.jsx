@@ -38,7 +38,7 @@ const ImageUploader = ({image,setResource, isDisabled=false}) => {
             className="w-auto h-64 ring-2 ring-white"
             width={130}
             height={130}
-            src={URL.createObjectURL(image)}
+            src={image instanceof File ? URL.createObjectURL(image) : image}
             alt="upload image"
             />
         ) : (

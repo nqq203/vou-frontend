@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation"
 import Tag from "./Tag";
 
-const Card = ({id,name, date, vouchers,status}) => {
+const Card = ({id,name, date, vouchers,status, bannerImg}) => {
   const {push} = useRouter();
 
   const viewDetailEvent = () => {
@@ -17,7 +17,7 @@ const Card = ({id,name, date, vouchers,status}) => {
     </div>
         <img
             className="h-[200px] w-full"
-            src="https://placehold.co/328x200"
+            src={bannerImg || "https://placehold.co/328x200"}
             alt="event image"
         />
 

@@ -1,7 +1,6 @@
 import api from "./api";
 
 export const callApiCreateEvent = async (eventData) => {
-    // console.log("Api: ", eventData);
     const {data} = await api.post(`/events`,eventData);
     return data;
 }
@@ -9,10 +8,10 @@ export const callApiCreateEvent = async (eventData) => {
 export const callApiUploadEventImgs = async (idEvent, imagesData) => {
     const formData = new FormData();
     formData.append('bannerFile',imagesData[0]);
-    formData.append('QRImage',imagesData[1]);
+    formData.append('qrImage',imagesData[1]);
     formData.append('voucherImg',imagesData[2]);
 
-    const {data} = await api.patch(`/events/${idEvent}`,
+    const {data} = await api.put(`/events?id_event=${idEvent}`,
         formData,
         {
             headers: {
@@ -23,8 +22,9 @@ export const callApiUploadEventImgs = async (idEvent, imagesData) => {
     return data;
 }
 
-export const callApiGetMyEvents = async () => {
-    const {data} = await api.get(`/events`);
+export const callApiGetMyEvents = async (brandId) => {
+    console.log(brandId);
+    const {data} = await api.get(`/events?brandId=${brandId}`);
     return data;
 }
 
