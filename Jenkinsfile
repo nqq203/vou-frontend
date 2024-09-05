@@ -10,6 +10,13 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/nqq203/vou-frontend.git'
             }
         }
+        stage('List Files') {
+            steps {
+                script {
+                    sh 'ls -al'  // Lists all files in the current directory
+                }
+            }
+        }
         stage('Build And Push') {
             steps {
                 script {
