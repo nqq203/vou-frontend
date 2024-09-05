@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = 'nqquy21/vou-frontend:latest'
+        DOCKER_IMAGE = 'nqquy21/vou-frontend'
     }
 
     stages {
