@@ -169,4 +169,6 @@ const LoginPage = () => {
   )
 }
 
+LoginPage.unauthorized = true;
+
 export default LoginPage

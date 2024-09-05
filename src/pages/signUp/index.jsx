@@ -142,4 +142,6 @@ const SignUpPage = () => {
   )
 }
 
+SignUpPage.unauthorized = true;
+
 export default SignUpPage
