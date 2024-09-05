@@ -7,9 +7,9 @@ export const callApiCreateEvent = async (eventData) => {
 
 export const callApiUploadEventImgs = async (idEvent, imagesData) => {
     const formData = new FormData();
-    formData.append('bannerFile',imagesData[0]);
-    formData.append('qrImage',imagesData[1]);
-    formData.append('voucherImg',imagesData[2]);
+    formData.append('bannerFile',imagesData.bannerFile);
+    formData.append('qrImage',imagesData.QRImage);
+    formData.append('voucherImg',imagesData.voucherImg);
 
     const {data} = await api.put(`/events?id_event=${idEvent}`,
         formData,
@@ -19,6 +19,7 @@ export const callApiUploadEventImgs = async (idEvent, imagesData) => {
             },
         }
     );
+    
     return data;
 }
 
@@ -28,13 +29,11 @@ export const callApiGetMyEvents = async (brandId) => {
     return data;
 }
 
-// pending
 export const callApiGetEventDetail = async (eventId) => {
     const {data} = await api.get(`/events/${eventId}`);
     return data;
 }
 
-// pending
 export const callApiUpdateEventDetail = async (eventId, updateData) => {
     const {data} = await api.put(`/events/${eventId}`,updateData);
     return data;

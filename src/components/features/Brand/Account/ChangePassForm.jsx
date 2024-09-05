@@ -3,9 +3,12 @@ import { useState,useRef } from "react";
 import { useMutation } from "react-query";
 import { callApiChangePassword } from "@pages/api/user";
 import Notification from "@components/common/Notification";
+import { useSelector } from "react-redux";
 
 const ChangePassForm = ({handleClose}) => {
   const formChangePass = useRef(null);
+  const email = useSelector(state => state.auth.email)
+
   // Notification
   const [showNoti, setShowNoti] = useState(false)
   const [isError, setIsError] = useState(false);
@@ -32,7 +35,7 @@ const ChangePassForm = ({handleClose}) => {
   )
 
   const validate = (formProps) => {
-    if(formProps.email === "" || formProps.password === "" || formProps.rePassword === ""){
+    if(formProps.password === "" || formProps.rePassword === ""){
       setIsError(true);
       setShowNoti(true);
       setNotiMsg("Vui lòng điền đầy đủ các ô nhập liệu");
@@ -69,7 +72,11 @@ const ChangePassForm = ({handleClose}) => {
     console.log(formProps)
     const isValid = validate(formProps)
     if(isValid) {
-      changePassMutation.mutate(formProps)
+      const data = {
+        ...formProps,
+        email: email,
+      }
+      changePassMutation.mutate(data)
     }
   }
 
@@ -91,12 +98,6 @@ const ChangePassForm = ({handleClose}) => {
         </div>
 
         <form ref={formChangePass} onSubmit={(e) => {e.preventDefault()}} className="flex flex-col gap-2">
-          <div className="flex flex-col px-2 py-2 grow">
-            <h5 className="text-base font-semibold">Email</h5>
-            <input type="email" className="input_text" placeholder="email@gmail.com" 
-              name="email" defaultValue={""}   required  />
-          </div> 
-
           <div className="flex flex-col px-2 py-2 grow">
             <h5 className="text-base font-semibold">Password</h5>
             <input type="password" className="input_text" placeholder="" 

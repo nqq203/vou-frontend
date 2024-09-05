@@ -137,7 +137,7 @@ const AdminProfile = () => {
       <div className='container w-full my-4'>
         {showChangePassForm && <ChangePassForm handleClose={handleCloseForm}/>}
         <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
-          <Notification type={`${isError ? 'Error' : 'Success'}` } 
+          <Notification type={`${isError ? 'Error' : 'success'}` } 
               title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
         </div>
         <TitlePage title={"Thông tin tài khoản"} />

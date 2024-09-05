@@ -18,7 +18,7 @@ import { IoChevronBackCircle } from "react-icons/io5";
 import Notification from "@components/common/Notification";
 import TitlePage from "@components/common/TitlePage";
 import FormGame from "../FormGame";
-import { convertDataToOutput } from "@utils/date";
+import { convertDataToOutput,convertInputToSave } from "@utils/date";
 import { callApiGetEventDetail, callApiUpdateEventDetail } from "@pages/api/event";
 
 const EventDetail = () => {
@@ -31,13 +31,14 @@ const EventDetail = () => {
   //Event
   const formDataEvent = useRef(null);
   const [dataEvent, setDataEvent] = useState({});
+  const idBrand = useSelector(state => state.auth.idUser);
+
   // Notification
   const [showNoti, setShowNoti] = useState(false)
   const [isError, setIsError] = useState(false);
   const [notiMsg, setNotiMsg] = useState('');
 
   //Other Brands
-  // const [listAvailableBrands, setListAvailableBrands] = useState(eventStore.listAvailableBrands)
   const listAvailableBrands = eventStore.listAvailableBrands;
   const [listBrands, setListBrands] = useState([])
 
@@ -69,7 +70,7 @@ const EventDetail = () => {
   const [hasItemCoin, setHasItemCoin] = useState(false);
 
   // Game quiz
-  const [gameStartAt, setGameStartAt] = useState(dataEvent.gameInfoDTO?.gameStartAt);
+  const [startedAt, setGameStartAt] = useState(convertDataToOutput(dataEvent.gameInfoDTO?.startedAt));
   const [quizData, setQuizData] = useState({});
 
   // Voucher Type
@@ -100,13 +101,9 @@ const EventDetail = () => {
         setgameType(data.metadata?.gameInfoDTO?.gameType === "shake-game" ? "Lắc xu" : "Quizz");
         setGameName(data.metadata?.gameInfoDTO?.name);
         
-        setQuizData(Array.from({ length: 10 }).map((_, i) => ({
-          question: data.metadata?.gameInfoDTO[`question${i + 1}`] || '',
-          ans1: data.metadata?.gameInfoDTO[`${i + 1}_answer_1`] || '',
-          ans2: data.metadata?.gameInfoDTO[`${i + 1}_answer_2`] || '',
-          ans3: data.metadata?.gameInfoDTO[`${i + 1}_answer_3`] || '',
-          correctAnswerIndex: 0,
-        })));
+        setGameStartAt(convertDataToOutput(data.metadata?.startedAt))
+
+        setQuizData(data.metadata?.gameInfoDTO.quiz);
         setvoucherType(data.metadata?.inventoryInfo?.voucher_type);
         setVoucherCode(data.metadata?.inventoryInfo?.voucher_code);
         setVoucherDescription(data.metadata?.inventoryInfo?.voucher_description);
@@ -145,8 +142,20 @@ const EventDetail = () => {
   // },[listBrands])
 
 
+
   const updateEventMutation = useMutation(
-    (idEvent) => callApiUpdateEventDetail(idEvent),
+    async (idEvent,data,dataImage) => {
+      const newEvent = await callApiUpdateEventDetail(idEvent,data);
+      console.log("Update: ",newEvent)
+
+      // const idEvent = newEvent.metadata?.idEvent;
+      // // const images = [banner,qrImg,voucherImg];
+      // if(dataImage !== null){
+      //   const eventImg = await callApiUploadEventImgs(idEvent,dataImage)
+      //   return {newEvent,eventImg}
+      // }
+      return {newEvent}
+    },
     {
       onSuccess: (data) => {
         console.log(data)
@@ -237,7 +246,7 @@ const EventDetail = () => {
         return false;
       }
     } else {
-      if(gameStartAt === ""){
+      if(startedAt === ""){
         setIsError(true);
         setShowNoti(true);
         setNotiMsg("Ngày bắt đầu livestream chơi game còn thiếu!");
@@ -247,6 +256,8 @@ const EventDetail = () => {
 
     return true
   }
+
+  const [test, setTest] = useState("");
 
   const sendData = () => {
     const formData = new FormData(formDataEvent.current);
@@ -262,39 +273,42 @@ const EventDetail = () => {
     const data = {
       eventName: eventName,
       numberOfVouchers: parseInt(numOfVouchers),
-      startDate: startDate,
-      endDate: endDate,
+      startDate: convertInputToSave(startDate),
+      endDate: convertInputToSave(endDate),
       brandId: listBrands,
+      createdBy: idBrand,
       'inventoryInfo':{
         gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
         voucher_type: voucherType,
         voucher_code: voucherCode,
         voucher_description: voucherDescription,
         voucher_name: voucherName,
-        voucher_price: voucherPrice,
-        expiration_date: expiredDay,
+        voucher_price: parseInt(voucherPrice),
+        expiration_date: convertInputToSave(expiredDay),
         aim_coin: formProps.aim_coin,
         items: listItems,
       },
       'gameInfoDTO': {
         name: gameName,
         gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
-        gameStartAt: gameStartAt,
+        startedAt: convertInputToSave(startedAt),
         quiz: quizData,        
       },
     };
-    
-    const dataImage = {
+
+    const dataImage = (banner === undefined && qrImg === undefined && voucherImg === undefined) ? null : {
       bannerFile: banner,
       QRImage: qrImg,
       voucherImg: voucherImg,
     }
 
-    setDataEvent(data);
     console.log(data);
+    console.log(dataImage)
+    // setTest(data)
+    setDataEvent(data);
 
     window.scrollTo(0, 0);
-    // updateEventMutation.mutate(idEvent);
+    updateEventMutation.mutate(idEvent,data,dataImage);
 
   }
   
@@ -327,6 +341,8 @@ const EventDetail = () => {
           <IoChevronBackCircle size={40} />
         </div>
         <TitlePage title={"Thông tin sự kiện"} />
+      {/* <h5>{JSON.stringify(test)}</h5> */}
+
       </div>
 
       <div className='container flex flex-col bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
@@ -497,8 +513,17 @@ const EventDetail = () => {
                 <>
                   <div className="flex flex-col px-2 py-2 max-w-[424px]">
                     <h5 className="text-base font-semibold">Thời gian bắt đầu chơi game</h5>
-                    <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
-                      selected={gameStartAt} minDate={new Date()}  onChange={(date) => setGameStartAt(date)}   />
+                    <DatePicker
+                      placeholderText="dd/mm/yyyy"
+                      disabled
+                      className="input_text w-full"
+                      dateFormat="dd/MM/yyyy h:mm aa"
+                      selected={startedAt}
+                      onChange={(date) => setGameStartAt(date)}
+                      showTimeSelect
+                      timeFormat="HH:mm:ss"
+                      timeIntervals={15}
+                    />
                   </div>
                   <FormGame quizData={quizData} setQuizData={setQuizData} />
                 </>

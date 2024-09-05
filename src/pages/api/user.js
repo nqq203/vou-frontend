@@ -21,6 +21,7 @@ export const callApiUpdateAccount = async (idUser,updatedData) => {
 }
 
 export const callApiUpdateAccountImage = async (idUser,avatar) => {
+    console.log("ava: ",avatar)
     const formData = new FormData();
     formData.append('avatar',avatar);
 

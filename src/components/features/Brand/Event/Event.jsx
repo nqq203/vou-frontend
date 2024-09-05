@@ -61,7 +61,7 @@ const Event = () => {
   }
 
   // Game quiz
-  const [gameStartAt, setGameStartAt] = useState("");
+  const [startedAt, setGameStartAt] = useState("");
   const [quizData, setQuizData] = useState(Array.from({ length: 10 }).map((_, i) => ({
     question: dataEvent.gameInfoDTO[`question${i + 1}`] || '',
     ans1: dataEvent.gameInfoDTO[`${i + 1}_answer_1`] || '',
@@ -82,6 +82,7 @@ const Event = () => {
   // Change Event to Game
   const [isEventForm, setIsEventForm] = useState(true);
   const changeForm = (state) => {
+    console.log(startedAt);
     handleFormData();
     setIsEventForm(!state);
     window.scrollTo(0, 0);
@@ -172,13 +173,18 @@ const Event = () => {
 }
   
   const createEventMutation = useMutation(
-    async (data) => {
+    async (data,images) => {
       const newEvent = await callApiCreateEvent(data);
+      // console.log("EVENT: ",newEvent)
+
       const idEvent = newEvent.metadata?.idEvent;
-      const images = [banner,qrImg,voucherImg];
-      console.log("imgae: ", images);
-      const eventImg = await callApiUploadEventImgs(idEvent,images)
-      return {newEvent,eventImg}
+      // const images = [banner,qrImg,voucherImg];
+      console.log("Here", images)
+      if(images !== undefined){
+        const eventImg = await callApiUploadEventImgs(idEvent,images)
+        return {newEvent,eventImg}
+      }
+      return {newEvent}
     },
     {
       onSuccess: (data) => {
@@ -237,7 +243,7 @@ const Event = () => {
         return false;
       }
     } else {
-      if(gameStartAt === ""){
+      if(startedAt === ""){
         setIsError(true);
         setShowNoti(true);
         setNotiMsg("Ngày bắt đầu livestream chơi game còn thiếu!");
@@ -271,7 +277,7 @@ const Event = () => {
         voucher_code: dataEvent.voucher_code,
         voucher_description: dataEvent.voucher_description,
         voucher_name: dataEvent.voucher_name,
-        voucher_price: dataEvent.voucher_price,
+        voucher_price: parseInt(dataEvent.voucher_price),
         expiration_date: convertInputToSave(expiredDay),
         aim_coin: formProps.aim_coin,
         items: listItems,
@@ -279,22 +285,22 @@ const Event = () => {
       'gameInfoDTO': {
         name: gameName,
         gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
-        gameStartAt: convertInputToSave(gameStartAt),
+        startedAt: convertInputToSave(startedAt),
         quiz: quizData,        
       },
     };
     
-    const dataImage = {
+    const dataImage = (banner === undefined && qrImg === undefined && voucherImg === undefined) ? null : {
       bannerFile: banner,
       QRImage: qrImg,
       voucherImg: voucherImg,
     }
 
-    // setDataEvent(data);
     console.log(data);
     console.log(dataImage)
-
-    createEventMutation.mutate(data);
+    
+    // setTest(data);
+    createEventMutation.mutate(data,dataImage);
   }
 
   const preventSubmit = (e) => {
@@ -307,7 +313,7 @@ const Event = () => {
 
   return(
     <div className='container w-full my-4'>
-      <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
+      <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end`}>
         <Notification type={`${isError ? 'error' : 'success'}` } 
             title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
       </div>
@@ -336,13 +342,13 @@ const Event = () => {
               </div>
   
               <div className="flex gap-4">
-                <div className="flex flex-col px-2 py-2 grow">
+                <div className="flex flex-col px-2 py-2 grow ">
                   <h5 className="text-base font-semibold">Ngày bắt đầu</h5>
                   <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
                     selected={startDate} minDate={new Date()}  onChange={(date) => setStartDate(date)}   />
                 </div>
   
-                <div className="flex flex-col px-2 py-2 grow">
+                <div className="flex flex-col px-2 py-2 grow ">
                   <h5 className="text-base font-semibold">Ngày kết thúc</h5>
                   <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy" 
                     selected={endDate} minDate={new Date()} onChange={(date) => setEndDate(date)}  />
@@ -469,8 +475,13 @@ const Event = () => {
                         >
                           <ul className="py-1 " role="none">
                               {listGames.map((item) => (
-                              <li key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" 
-                                  role="menuitem" value={item} onClick={(e) => {setgameType(e.target.textContent); setOpenCategory(false); window.scrollTo(0,0);}}
+                              <li key={item} className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-200" role="menuitem" value={item} 
+                                  onClick={(e) => {
+                                    setgameType(e.target.textContent); setOpenCategory(false); window.scrollTo(0,0);
+                                    if(e.target.textContent === "Quizz"){
+                                      setNumOfVouchers("3");
+                                    }
+                                  }}
                               > 
                                   {item}
                               </li>
@@ -497,8 +508,18 @@ const Event = () => {
                 <>
                   <div className="flex flex-col px-2 py-2 max-w-[424px]">
                     <h5 className="text-base font-semibold">Thời gian bắt đầu chơi game</h5>
-                    <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
-                      selected={gameStartAt} minDate={new Date()}  onChange={(date) => setGameStartAt(date)}   />
+                    <DatePicker
+                      placeholderText="dd/mm/yyyy"
+                      className="input_text w-full"
+                      dateFormat="dd/MM/yyyy h:mm aa"
+                      selected={startedAt}
+                      minDate={new Date()}
+                      onChange={(date) => setGameStartAt(date)}
+                      showTimeSelect
+                      timeFormat="HH:mm:ss"
+                      timeIntervals={15}
+                    />
+
                   </div>
                   <FormGame quizData={quizData} setQuizData={setQuizData} />
                 </>

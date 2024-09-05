@@ -47,8 +47,9 @@ const Map = ({location, editLocation, handleClose}) => {
 
   const handleGeoCode = async (searchQuery) => {
     if(searchQuery === '') return;
+    console.log(searchQuery);
     const locationInput = await geocode(searchQuery);
-    // console.log("Input: " ,locationInput)
+    console.log("Input: " ,locationInput)
     if (locationInput) {
       setPosition([locationInput.lat, locationInput.lon]);
       setAddress(locationInput.display_name)
@@ -69,6 +70,7 @@ const Map = ({location, editLocation, handleClose}) => {
   }
       
   async function geocode(query) {
+    console.log("queryr:", query);
     const url = `${NOMINATIM_BASE_URL}search?format=json&q=${encodeURIComponent(query)}&limit=1`;
     const response = await fetch(url);
     const data = await response.json();
@@ -108,7 +110,7 @@ const Map = ({location, editLocation, handleClose}) => {
           placeholder="Nhập vị trí" 
           className='input_text w-full'
           value={inputAdd}
-          onChange={(e) => setInputAdd(e.target.value)}
+          onChange={(e) => {console.log(e.target.value);setInputAdd(e.target.value)}}
         />
         <div className='outline_btn h-[36px] mt-2' onClick={() => handleGeoCode(inputAdd)}>Tìm</div>
       </div>
