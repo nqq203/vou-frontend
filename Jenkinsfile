@@ -17,7 +17,7 @@ pipeline {
                     try {
                         docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
                             echo 'Registry session started. Starting Docker build...'
-                            def builtImage = docker.build(DOCKER_IMAGE, ".")
+                            def builtImage = docker.build(DOCKER_IMAGE)
                             echo 'Image built successfully. Pushing...'
                             builtImage.push()
                             echo 'Image pushed successfully.'
