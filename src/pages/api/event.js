@@ -35,6 +35,7 @@ export const callApiGetEventDetail = async (eventId) => {
 }
 
 export const callApiUpdateEventDetail = async (eventId, updateData) => {
+    console.log("heyy: ", updateData)
     const {data} = await api.put(`/events/${eventId}`,updateData);
     return data;
 }

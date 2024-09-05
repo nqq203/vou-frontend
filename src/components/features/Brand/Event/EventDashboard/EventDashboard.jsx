@@ -15,12 +15,12 @@ const EventDashboard = () => {
   const overview = [
     {
       icon: <FaSackDollar size={32} />,
-      name: 'My Balance',
+      name: 'Tổng số người tham gia',
       value: '12,750',
     }, 
     {
       icon: <FaHandHoldingDollar size={32} />,
-      name: 'Income',
+      name: 'Số voucher đã đổi',
       value: '5,600',
     },
     {
@@ -31,7 +31,7 @@ const EventDashboard = () => {
               height={32}
               className="object-contain"
             />,
-      name: 'Expense',
+      name: 'Số voucher còn lại',
       value: '3,460',
     },
     {
@@ -42,7 +42,7 @@ const EventDashboard = () => {
               height={32}
               className="object-contain"
             />,
-      name: 'Total Saving',
+      name: 'Số vật phẩm rơi ra',
       value: '7,920',
     }
   ]

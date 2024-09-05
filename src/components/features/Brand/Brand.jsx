@@ -72,12 +72,6 @@ const Brand = () => {
       cacheTime: Infinity, // Data will be cached indefinitely      
     }
   )
-  // useEffect(()=> {
-
-  // },[listEvents])
-
-  
-
 
   return (
     <div className='container w-full my-4'>
@@ -88,7 +82,7 @@ const Brand = () => {
       <TitlePage title={"Sự kiện của tôi"} />
 
       <SearchBar/>
-      <div className="container flex flex-wrap gap-4 my-4">
+      <div className="container flex flex-wrap gap-6 my-4">
       {
         listEvents.map(event => {
           const status = compareDates(event.startDate, event.endDate);

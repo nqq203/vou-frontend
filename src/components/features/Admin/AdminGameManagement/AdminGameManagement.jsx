@@ -3,25 +3,29 @@ import GameItem from "@components/common/GameItem";
 import AdminEditGameForm from "../AdminForm/AdminEditGameForm";
 import { useEffect, useState } from "react";
 import TitlePage from "@components/common/TitlePage";
+import { useSelector } from "react-redux";
 
 export default function AdminGameManagement() {
-  const gameList = [
-    {
-      imageUrl: "/images/avt.png",
-      title: "Game 1",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      category: "Quiz", 
-    },
-    {
-      imageUrl: "/images/avt.png",
-      title: "Game 2",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      category: "Lắc xì", 
-    }
-  ]
-
   const [gameInfo, setGameInfo] = useState(null);
   const [isOpenEditGame, setIsOpenEditGame] = useState(false);
+  const listItems = useSelector(state=> state.event.listAvailableItems);
+  
+  const gameList = [
+    {
+      title: "Quiz Game",
+      imageUrl: "/images/quizGame.jpg",
+      type: "Trí tuệ",
+      description: "Quiz là game tương tác, nơi người dùng cùng xem livestream và trả lời các câu hỏi trong thời gian thực. Người chơi tham gia qua thiết bị cá nhân, cạnh tranh với nhau bằng cách chọn câu trả lời đúng nhanh nhất, tạo nên trải nghiệm học hỏi và giải trí trực tiếp",
+      exchangeItems: [],
+    },
+    {
+      title: "Lắc vật phẩm",
+      imageUrl: "/images/shakeGame.png",
+      type: "Giải trí",
+      description: "Lắc Xu là game tương tác, trong đó người dùng lắc điện thoại để nhận các vật phẩm ngẫu nhiên như xu, quà, hoặc điểm thưởng. Các vật phẩm thu thập được có thể dùng để đổi lấy phần thưởng hấp dẫn, tạo cảm giác hứng thú và hồi hộp khi chơi",
+      exchangeItems: listItems,
+    }
+  ]
 
   function handleOpenEditGame(gameInfo) {
     setIsOpenEditGame(true);
@@ -36,6 +40,7 @@ export default function AdminGameManagement() {
   useEffect(() => {
     console.log(gameInfo);
   }, [gameInfo])
+  console.log(listItems)
 
   return (
     <div className="container w-full my-4">

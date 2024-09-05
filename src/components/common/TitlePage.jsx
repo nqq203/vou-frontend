@@ -6,7 +6,6 @@ import { useState } from 'react';
 
 const TitlePage = ({title}) => {
     const settingOptions = ['Đăng xuất'];
-    const router = useRouter();
     const dispatch = useDispatch();
     const [openCategory, setOpenCategory] = useState(false);
     const avatarUrl = useSelector(state => state.auth.avatarUrl);
@@ -14,7 +13,6 @@ const TitlePage = ({title}) => {
     const signOut = () => {
       setOpenCategory(false);
       dispatch(logout());
-      router.push('/signIn');
     }
   
     const handleMouseEnter = () => {
@@ -24,6 +22,7 @@ const TitlePage = ({title}) => {
     const handleMouseLeave = () => {
       setOpenCategory(false);
     };
+    
     return (
         <div className="container w-full flex justify-between items-center" >
             <h1 className='text-heading1 font-bold text-primary'>{title}</h1>
@@ -31,7 +30,7 @@ const TitlePage = ({title}) => {
             onMouseEnter={handleMouseEnter} 
             >
                 <img
-                    className="inline-block h-10 w-10 rounded-full ring-2 ring-white"
+                    className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover"
                     src={avatarUrl || '/images/defaultAva.jpg'}
                     alt=""
                 />

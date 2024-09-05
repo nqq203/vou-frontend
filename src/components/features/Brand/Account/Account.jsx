@@ -169,7 +169,7 @@ const Account = () => {
         <div className="flex flex-col min-w-[150px] items-center gap-4">
             <span className="text-heading3_bold text-primary text-center">{brandInfo.fullName}</span>
             <img
-              className="inline-block h-[130px] w-[130px] rounded-full ring-2 ring-white"
+              className="inline-block h-[130px] w-[130px] rounded-full ring-2 ring-white object-cover"
               width={130}
               height={130}
               src={tempAvatar}

@@ -136,7 +136,7 @@ const AdminAddAccountForm = ({handleCloseAddForm, handleNoti}) => {
                     </select>
                     </label>
                 </div>
-                <div className='primary_btn w-[80%] self-center' onClick={submitHandler}>Tạo tài khoản</div>
+                <div className='primary_btn w-[80%] self-center mt-4' onClick={submitHandler}>Tạo tài khoản</div>
 
             </div>
           </div>

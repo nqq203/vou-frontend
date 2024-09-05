@@ -173,13 +173,17 @@ const Event = () => {
 }
   
   const createEventMutation = useMutation(
-    async (data,images) => {
+    async (data) => {
       const newEvent = await callApiCreateEvent(data);
       // console.log("EVENT: ",newEvent)
 
       const idEvent = newEvent.metadata?.idEvent;
-      // const images = [banner,qrImg,voucherImg];
-      console.log("Here", images)
+      const images = (banner === undefined && qrImg === undefined && voucherImg === undefined) ? null : {
+        bannerFile: banner,
+        QRImage: qrImg,
+        voucherImg: voucherImg,
+      }
+      console.log(images);
       if(images !== undefined){
         const eventImg = await callApiUploadEventImgs(idEvent,images)
         return {newEvent,eventImg}
@@ -290,17 +294,10 @@ const Event = () => {
       },
     };
     
-    const dataImage = (banner === undefined && qrImg === undefined && voucherImg === undefined) ? null : {
-      bannerFile: banner,
-      QRImage: qrImg,
-      voucherImg: voucherImg,
-    }
-
     console.log(data);
-    console.log(dataImage)
     
     // setTest(data);
-    createEventMutation.mutate(data,dataImage);
+    createEventMutation.mutate(data);
   }
 
   const preventSubmit = (e) => {

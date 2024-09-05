@@ -19,15 +19,15 @@ import Notification from "@components/common/Notification";
 import TitlePage from "@components/common/TitlePage";
 import FormGame from "../FormGame";
 import { convertDataToOutput,convertInputToSave } from "@utils/date";
-import { callApiGetEventDetail, callApiUpdateEventDetail } from "@pages/api/event";
+import { callApiGetEventDetail, callApiUpdateEventDetail,callApiUploadEventImgs } from "@pages/api/event";
 
 const EventDetail = () => {
   const {push} = useRouter();
   const searchParams = useSearchParams();
   const status = searchParams.get('s') || "active";
+  const idEvent = searchParams.get('id') || 0;  
   const eventStore = useSelector(state=> state.event);
 
-  
   //Event
   const formDataEvent = useRef(null);
   const [dataEvent, setDataEvent] = useState({});
@@ -84,7 +84,6 @@ const EventDetail = () => {
     }    
   }
 
-  const idEvent = searchParams.get('id') || 0;  
   const {isFetching, refetch} = useQuery(
     "fetch-event-detail",
     () => callApiGetEventDetail(idEvent),
@@ -101,9 +100,9 @@ const EventDetail = () => {
         setgameType(data.metadata?.gameInfoDTO?.gameType === "shake-game" ? "Lắc xu" : "Quizz");
         setGameName(data.metadata?.gameInfoDTO?.name);
         
-        setGameStartAt(convertDataToOutput(data.metadata?.startedAt))
+        setGameStartAt(convertDataToOutput(data.metadata?.gameInfoDTO?.startedAt))
 
-        setQuizData(data.metadata?.gameInfoDTO.quiz);
+        setQuizData(data.metadata?.gameInfoDTO.quiz.sort((a, b) => a.quizId - b.quizId));
         setvoucherType(data.metadata?.inventoryInfo?.voucher_type);
         setVoucherCode(data.metadata?.inventoryInfo?.voucher_code);
         setVoucherDescription(data.metadata?.inventoryInfo?.voucher_description);
@@ -137,28 +136,23 @@ const EventDetail = () => {
     refetch();
   },[idEvent])
 
-  // useEffect(() => {
-  //   console.log("Reload di")
-  // },[listBrands])
-
-
-
   const updateEventMutation = useMutation(
-    async (idEvent,data,dataImage) => {
+    async (data) => {
       const newEvent = await callApiUpdateEventDetail(idEvent,data);
-      console.log("Update: ",newEvent)
 
-      // const idEvent = newEvent.metadata?.idEvent;
-      // // const images = [banner,qrImg,voucherImg];
-      // if(dataImage !== null){
-      //   const eventImg = await callApiUploadEventImgs(idEvent,dataImage)
-      //   return {newEvent,eventImg}
-      // }
+      const images = (banner === undefined && qrImg === undefined && voucherImg === undefined) ? null : {
+        bannerFile: banner,
+        QRImage: qrImg,
+        voucherImg: voucherImg,
+      }
+      console.log(images);
       return {newEvent}
     },
     {
       onSuccess: (data) => {
-        console.log(data)
+        console.log("Suc: " ,data)
+        setIsEventForm(true);
+        window.scrollTo(0, 0);
 
         setIsError(false);
         setShowNoti(true);
@@ -271,15 +265,16 @@ const EventDetail = () => {
     
     // ...dataEvent,
     const data = {
+      idEvent: parseInt(idEvent),
       eventName: eventName,
       numberOfVouchers: parseInt(numOfVouchers),
       startDate: convertInputToSave(startDate),
       endDate: convertInputToSave(endDate),
-      brandId: listBrands,
+      brandId: dataEvent.brandId,
+      brandLogo: dataEvent.brandLogo,
       createdBy: idBrand,
+      imageUrl: dataEvent.imageUrl,
       'inventoryInfo':{
-        gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
-        voucher_type: voucherType,
         voucher_code: voucherCode,
         voucher_description: voucherDescription,
         voucher_name: voucherName,
@@ -287,29 +282,28 @@ const EventDetail = () => {
         expiration_date: convertInputToSave(expiredDay),
         aim_coin: formProps.aim_coin,
         items: listItems,
+        event_id: parseInt(idEvent),
+        imageUrl: dataEvent.inventoryInfo.imageUrl,
+        items: dataEvent.inventoryInfo.items,
+        qrCode: dataEvent.inventoryInfo.qrCode,
+
       },
       'gameInfoDTO': {
+        gameId: dataEvent.gameInfoDTO.gameId,
         name: gameName,
         gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
         startedAt: convertInputToSave(startedAt),
-        quiz: quizData,        
+        quiz: quizData, 
+        eventId: parseInt(idEvent),
       },
     };
 
-    const dataImage = (banner === undefined && qrImg === undefined && voucherImg === undefined) ? null : {
-      bannerFile: banner,
-      QRImage: qrImg,
-      voucherImg: voucherImg,
-    }
-
+    
     console.log(data);
-    console.log(dataImage)
     // setTest(data)
     setDataEvent(data);
 
-    window.scrollTo(0, 0);
-    updateEventMutation.mutate(idEvent,data,dataImage);
-
+    updateEventMutation.mutate(data);
   }
   
 
@@ -341,7 +335,7 @@ const EventDetail = () => {
           <IoChevronBackCircle size={40} />
         </div>
         <TitlePage title={"Thông tin sự kiện"} />
-      {/* <h5>{JSON.stringify(test)}</h5> */}
+        {/* <h5>{JSON.stringify(test)}</h5> */}
 
       </div>
 
@@ -360,13 +354,14 @@ const EventDetail = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên sự kiện</h5>
-                  <input disabled={status === 'done'} type="text" className="input_text" placeholder="Tên" 
+                  <input disabled={status === 'done'} type="text" className={`${status === 'done' ? "input_text_disabled" : "input_text"}`} placeholder="Tên" 
                     name="eventName" value={eventName || ''} onChange={(e) => setEventName(e.target.value)}    required  />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Số lượng vouchers</h5>
-                  <input disabled={status === 'done'} type="number" className="input_text" placeholder="100"
+                  <input disabled={status === 'done' || gameType === "Quizz"} type="number" 
+                    className={`${(status === 'done' || gameType === "Quizz") ? "input_text_disabled" : "input_text"}`} placeholder="100"
                     name="numberOfVouchers" value={numOfVouchers || ''} onChange={(e) => setNumOfVouchers(e.target.value)}  required  />
                 </div> 
   
@@ -375,13 +370,13 @@ const EventDetail = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày bắt đầu</h5>
-                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
+                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy"
                     selected={startDate} minDate={new Date()}  onChange={(date) => setStartDate(date)}   />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày kết thúc</h5>
-                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy" 
+                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy" 
                     selected={endDate} minDate={new Date()} onChange={(date) => setEndDate(date)}  />
                 </div>
               </div>
@@ -398,7 +393,7 @@ const EventDetail = () => {
                   {listAvailableBrands.map((brand,index) => (
                     <CheckBox key={`${brand.idUser}-${listBrands.includes(brand.idUser)}`}
                       label={brand.fullName} image={brand.avatarUrl}
-                      disable={status === 'done'}
+                      disable={true}
                       checked={listBrands.includes(brand.idUser)} 
                       onClick={() => addBrand(brand)}
                     />
@@ -412,13 +407,13 @@ const EventDetail = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên voucher</h5>
-                  <input disabled={status === 'done'} type="text" className="input_text" placeholder="Ten voucher" 
+                  <input disabled={status === 'done'} type="text" className={`${status === 'done' ? "input_text_disabled" : "input_text"}`} placeholder="Ten voucher" 
                     name="voucher_name" value={voucherName || ''} onChange={(e) => setVoucherName(e.target.value)}  required  />
                 </div> 
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Mã voucher</h5>
-                  <input disabled={status === 'done'} type="text" className="input_text" placeholder="XXXXXX" 
+                  <input disabled={status === 'done'} type="text" className={`${status === 'done' ? "input_text_disabled" : "input_text"}`} placeholder="XXXXXX" 
                     name="voucher_code" value={voucherCode || ''} onChange={(e) => setVoucherCode(e.target.value)}  required  />
                 </div>
   
@@ -427,7 +422,7 @@ const EventDetail = () => {
               <div className="flex gap-4">  
                 <div className="flex flex-col px-2 py-1 grow">
                     <h5 className="text-base font-semibold">Loại voucher</h5>
-                    <div className="input_dropdown" onClick={() => changeCategoryVoucher(openCategoryVoucher)}>
+                    <div className="input_dropdown" onClick={() => {if(status === 'done') {return;} changeCategoryVoucher(openCategoryVoucher)}}>
                     <span className='text-gray-900'>{voucherType}</span>
                     <MdOutlineArrowDropDown size={28}/>
                     </div>
@@ -455,20 +450,20 @@ const EventDetail = () => {
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Trị giá</h5>
-                  <input disabled={status === 'done'} type="number" className="input_text" placeholder="100000VNĐ" 
+                  <input disabled={status === 'done'} type="number" className={`${status === 'done' ? "input_text_disabled" : "input_text"}`} placeholder="100000VNĐ" 
                     name="voucher_price" value={voucherPrice || ''} onChange={(e) => setVoucherPrice(e.target.value)} required  />
                 </div> 
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày hết hạn</h5>
-                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
+                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy"
                     selected={expiredDay} minDate={new Date()}  onChange={(date) => setExpiredDay(date)}   />
                 </div> 
               </div>
   
               <div className="flex flex-col px-2 py-2 h-[200px]">
                 <h5 className="text-base font-semibold">Mô tả</h5>
-                <textarea disabled={status === 'done'} type="text" className="input_text h-full" placeholder="Mô tả ngắn gọn về cách sử dụng voucher"
+                <textarea disabled={status === 'done'} type="text" className={`${status === 'done' ? "input_text_disabled h-full" : "input_text h-full"}`} placeholder="Mô tả ngắn gọn về cách sử dụng voucher"
                   name="voucher_description" value={voucherDescription || ''} onChange={(e) => setVoucherDescription(e.target.value)} required />
               </div>
   
@@ -502,7 +497,7 @@ const EventDetail = () => {
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên trò chơi</h5>
-                  <input  disabled={status === 'done'} type="text" className="input_text" placeholder="Ten tro choi"
+                  <input  disabled={status === 'done'} type="text" className={`${status === 'done' ? "input_text_disabled" : "input_text"}`} placeholder="Ten tro choi"
                     name="game_name" value={gameName || ''} onChange={(e) => setGameName(e.target.value)}    required  />
                 </div>
               </div>
@@ -516,7 +511,7 @@ const EventDetail = () => {
                     <DatePicker
                       placeholderText="dd/mm/yyyy"
                       disabled
-                      className="input_text w-full"
+                      className="input_text_disabled w-full"
                       dateFormat="dd/MM/yyyy h:mm aa"
                       selected={startedAt}
                       onChange={(date) => setGameStartAt(date)}
@@ -546,7 +541,7 @@ const EventDetail = () => {
                   <div className="flex flex-col px-2 py-2 ">
                     <h5 className="text-base font-semibold ">Số lượng xu cần đạt để đổi voucher (Nếu có chọn item xu)</h5>
                     <input disabled={status === 'done' || (!hasItemCoin)} type="text" 
-                    className="input_text max-w-[404px]" placeholder="" 
+                    className={ (status === 'done' || (!hasItemCoin)) ? `input_text_disabled max-w-[404px]` : `input_text max-w-[404px]`} placeholder="" 
                       name="aim_coin" defaultValue={dataEvent.inventoryInfo?.aim_coin}  required  />
                   </div>
                   

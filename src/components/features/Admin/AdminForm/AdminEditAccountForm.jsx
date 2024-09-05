@@ -61,7 +61,7 @@ export default function AdminEditAccountForm({ userInfo, handleClose,handleNoti 
           <div className="flex flex-col gap-4">
             <h3 className="font-bold text-[24px]">Chỉnh sửa tài khoản</h3>
             <div className="w-[150px] h-[150px]">
-              <Image src={user.avatarUrl || '/images/defaultAva.jpg'} alt="avt" width={150} height={150} className="rounded-full" />
+              <img src={user.avatarUrl || '/images/defaultAva.jpg'} alt="avt" className="h-[150px] w-[150px] rounded-full" />
             </div>
             <div className="flex flex-row items-center ">
               <label className="flex flex-col justify-between mr-8 w-full">

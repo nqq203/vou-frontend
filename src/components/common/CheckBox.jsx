@@ -26,7 +26,7 @@ const CheckBox = ({id, label, image, checked, disable=false, ...props}) => {
             <span>{label}</span>
           </div>
           
-          <div className='relative w-5 h-5 border border-gray-300 p-3 rounded-md' onClick={handleClick}>
+          <div className={`${disable ? "bg-gray-100" : ""} relative w-5 h-5  border border-gray-300 p-3 rounded-md`} onClick={handleClick}>
             <FaCheck size={24} className={`absolute top-[1px] right-[-1px] text-primary ${isChecked ? "" : "hidden"}`} />
           </div>
           
