@@ -20,9 +20,16 @@ export const convertDataToOutput = (dateString) => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
       return null;
-    };
+    }
   
-    return date
+    // Vietnam timezone is UTC+7
+    const vietnamTimezoneOffset = 7 * 60; // in minutes
+  
+    // Get the current UTC offset in minutes and adjust for Vietnam's timezone
+    const utcOffsetInMinutes = date.getTimezoneOffset();
+    const adjustedDate = new Date(date.getTime() + (utcOffsetInMinutes + vietnamTimezoneOffset) * 60 * 1000);
+  
+    return adjustedDate;
 };
 
 export const convertDataToOutputString = (dateString) => {

@@ -19,7 +19,7 @@ import { IoChevronBackCircle } from "react-icons/io5";
 import Notification from "@components/common/Notification";
 import TitlePage from "@components/common/TitlePage";
 import FormGame from "../FormGame";
-import { convertDataToOutput,convertInputToSave } from "@utils/date";
+import { convertDataToOutput,convertInputToSave, convertDataToOutputString } from "@utils/date";
 import { callApiGetEventDetail, callApiUpdateEventDetail,callApiUploadEventImgs } from "@pages/api/event";
 
 const EventDetail = () => {
@@ -85,6 +85,8 @@ const EventDetail = () => {
     }    
   }
 
+  
+
   const {isFetching, refetch} = useQuery(
     "fetch-event-detail",
     () => callApiGetEventDetail(idEvent),
@@ -140,19 +142,21 @@ const EventDetail = () => {
   const updateEventMutation = useMutation(
     async (data) => {
       const newEvent = await callApiUpdateEventDetail(idEvent,data);
+      // console.log("Update Eve: ",newEvent);
 
-      const images = (banner === undefined && qrImg === undefined && voucherImg === undefined) ? null : {
-        bannerFile: banner,
-        QRImage: qrImg,
-        voucherImg: voucherImg,
+      if (banner && qrImg && voucherImg) {
+        const images = {
+          bannerFile: banner,
+          QRImage: qrImg,
+          voucherImg: voucherImg,
+        };
+  
+        const eventImg = await callApiUploadEventImgs(idEvent, images);
+        // console.log("Uploaded images: ", eventImg);
+  
+        return { newEvent, eventImg };
       }
-      // console.log(images);
-      if(images != undefined){
-        const eventImg = await callApiUploadEventImgs(idEvent,images)
-        // console.log("Upload ảnh:" , eventImg);
-        return {newEvent,eventImg}
-      }
-      return {newEvent}
+      return newEvent;
     },
     {
       onSuccess: (data) => {
@@ -306,7 +310,7 @@ const EventDetail = () => {
 
     
     console.log(data);
-    // setTest(data)
+    setTest(data)
     setDataEvent(data);
 
     updateEventMutation.mutate(data);
@@ -341,7 +345,7 @@ const EventDetail = () => {
           <IoChevronBackCircle size={40} />
         </div>
         <TitlePage title={"Thông tin sự kiện"} />
-        {/* <h5>{JSON.stringify(test)}</h5> */}
+        <h5>{JSON.stringify(test)}</h5>
 
       </div>
 
@@ -376,14 +380,20 @@ const EventDetail = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày bắt đầu</h5>
-                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy"
-                    locale={vi} selected={startDate} minDate={new Date()}  onChange={(date) => setStartDate(date)}   />
+                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy h:mm aa"
+                    locale={vi} showTimeSelect
+                    timeFormat="HH:mm:ss"
+                    timeIntervals={15}
+                    selected={startDate} minDate={new Date()}  onChange={(date) => setStartDate(date)}   />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày kết thúc</h5>
-                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy" 
-                    locale={vi} selected={endDate} minDate={new Date()} onChange={(date) => setEndDate(date)}  />
+                  <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy h:mm aa" 
+                    locale={vi} showTimeSelect
+                    timeFormat="HH:mm:ss"
+                    timeIntervals={15}
+                    selected={endDate} minDate={new Date()} onChange={(date) => setEndDate(date)}  />
                 </div>
               </div>
   
@@ -419,7 +429,7 @@ const EventDetail = () => {
 
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Mã voucher</h5>
-                  <input disabled={status === 'done'} type="text" className={`${status === 'done' ? "input_text_disabled" : "input_text"}`} placeholder="XXXXXX" 
+                  <input disabled type="text" className={"input_text_disabled"} placeholder="XXXXXX" 
                     name="voucher_code" value={voucherCode || ''} onChange={(e) => setVoucherCode(e.target.value)}  required  />
                 </div>
   
