@@ -2,6 +2,7 @@
 import { useState,useRef, useEffect } from "react"
 import { useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
+import {vi} from 'date-fns/locale'
 import { useRouter } from "next/navigation";    
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
@@ -145,7 +146,12 @@ const EventDetail = () => {
         QRImage: qrImg,
         voucherImg: voucherImg,
       }
-      console.log(images);
+      // console.log(images);
+      if(images != undefined){
+        const eventImg = await callApiUploadEventImgs(idEvent,images)
+        // console.log("Upload ảnh:" , eventImg);
+        return {newEvent,eventImg}
+      }
       return {newEvent}
     },
     {
@@ -371,13 +377,13 @@ const EventDetail = () => {
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày bắt đầu</h5>
                   <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy"
-                    selected={startDate} minDate={new Date()}  onChange={(date) => setStartDate(date)}   />
+                    locale={vi} selected={startDate} minDate={new Date()}  onChange={(date) => setStartDate(date)}   />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày kết thúc</h5>
                   <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy" 
-                    selected={endDate} minDate={new Date()} onChange={(date) => setEndDate(date)}  />
+                    locale={vi} selected={endDate} minDate={new Date()} onChange={(date) => setEndDate(date)}  />
                 </div>
               </div>
   
@@ -457,7 +463,7 @@ const EventDetail = () => {
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày hết hạn</h5>
                   <DatePicker disabled={status === 'done'} placeholderText='dd/mm/yyy' className={`${status === 'done' ? "input_text_disabled w-full" : "input_text w-full"}`} dateFormat="dd/MM/yyyy"
-                    selected={expiredDay} minDate={new Date()}  onChange={(date) => setExpiredDay(date)}   />
+                    locale={vi} selected={expiredDay} minDate={new Date()}  onChange={(date) => setExpiredDay(date)}   />
                 </div> 
               </div>
   
@@ -513,6 +519,7 @@ const EventDetail = () => {
                       disabled
                       className="input_text_disabled w-full"
                       dateFormat="dd/MM/yyyy h:mm aa"
+                      locale={vi}
                       selected={startedAt}
                       onChange={(date) => setGameStartAt(date)}
                       showTimeSelect

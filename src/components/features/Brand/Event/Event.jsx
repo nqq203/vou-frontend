@@ -1,6 +1,7 @@
 'use client'
 import { useState,useRef } from "react"
 import DatePicker from "react-datepicker";
+import moment from "moment-timezone";
 import { useRouter } from "next/navigation";    
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
@@ -18,7 +19,7 @@ import { convertInputToSave } from "@utils/date";
 import { useQuery } from "react-query";
 import { callApiGetAllBrands } from "@pages/api/brand";
 import { useSelector } from "react-redux";
-
+import {da, vi} from 'date-fns/locale'
 
 const Event = () => {
   const formDataEvent = useRef(null);
@@ -178,13 +179,13 @@ const Event = () => {
       // console.log("EVENT: ",newEvent)
 
       const idEvent = newEvent.metadata?.idEvent;
-      const images = (banner === undefined && qrImg === undefined && voucherImg === undefined) ? null : {
+      const images = (banner == undefined && qrImg == undefined && voucherImg == undefined) ? null : {
         bannerFile: banner,
         QRImage: qrImg,
         voucherImg: voucherImg,
       }
       console.log(images);
-      if(images !== undefined){
+      if(images != undefined){
         const eventImg = await callApiUploadEventImgs(idEvent,images)
         return {newEvent,eventImg}
       }
@@ -198,7 +199,7 @@ const Event = () => {
 
         setIsError(false);
         setShowNoti(true);
-        setNotiMsg("Cập nhật thông tin thành công");
+        setNotiMsg("Tạo sự kiện mới thành công");
       },
       onError: (error) => {
         const msgErr = error.response.data.message;
@@ -296,7 +297,7 @@ const Event = () => {
     
     console.log(data);
     
-    // setTest(data);
+    setTest(data);
     createEventMutation.mutate(data);
   }
 
@@ -315,11 +316,11 @@ const Event = () => {
             title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
       </div>
       <TitlePage title={"Đăng ký sự kiện"} />
-      {/* <h5>{JSON.stringify(test)}</h5> */}
+      <h5>{JSON.stringify(test)}</h5>
 
       <div className='container flex bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
         <form className="container" ref={formDataEvent} onSubmit={(e) => preventSubmit(e)}>    
-              {/* Sự kiện và vouchers */}
+          {/* Sự kiện và vouchers */}
           {isEventForm ? (
             <div>
               <h2 className='text-heading3_semibold text-primary'>Sự kiện</h2>
@@ -341,14 +342,25 @@ const Event = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col px-2 py-2 grow ">
                   <h5 className="text-base font-semibold">Ngày bắt đầu</h5>
-                  <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
-                    selected={startDate} minDate={new Date()}  onChange={(date) => setStartDate(date)}   />
+                  
+                  <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" 
+                    dateFormat="dd/MM/yyyy h:mm aa" 
+                    showTimeSelect
+                    timeFormat="HH:mm:ss" timeIntervals={15}
+                    locale={vi}
+                    selected={startDate} minDate={new Date()}  onChange={(date) => setStartDate(date)}  
+                  />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow ">
                   <h5 className="text-base font-semibold">Ngày kết thúc</h5>
-                  <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy" 
-                    selected={endDate} minDate={new Date()} onChange={(date) => setEndDate(date)}  />
+                  <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" 
+                    dateFormat="dd/MM/yyyy h:mm aa" 
+                    showTimeSelect
+                    timeFormat="HH:mm:ss" timeIntervals={15}
+                    locale={vi}
+                    selected={endDate} minDate={new Date()} onChange={(date) => setEndDate(date)} 
+                  />
                 </div>
               </div>
   
@@ -424,7 +436,7 @@ const Event = () => {
   
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Ngày hết hạn</h5>
-                  <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy"
+                  <DatePicker placeholderText='dd/mm/yyy' className="input_text w-full" dateFormat="dd/MM/yyyy" locale={vi}
                     selected={expiredDay} minDate={new Date()}  onChange={(date) => setExpiredDay(date)}   />
                 </div> 
               </div>
@@ -510,6 +522,7 @@ const Event = () => {
                       className="input_text w-full"
                       dateFormat="dd/MM/yyyy h:mm aa"
                       selected={startedAt}
+                      locale={vi}
                       minDate={new Date()}
                       onChange={(date) => setGameStartAt(date)}
                       showTimeSelect

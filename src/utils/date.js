@@ -1,17 +1,19 @@
 export const convertInputToSave = (date) => {
     if (!date) return '';
+
     const pad = (num) => String(num).padStart(2, '0');
     const padMilliseconds = (num) => String(num).padStart(3, '0');
+
+    // Use local time values
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+    const milliseconds = padMilliseconds(date.getMilliseconds());
     
-    const year = date.getUTCFullYear();
-    const month = pad(date.getUTCMonth() + 1);
-    const day = pad(date.getUTCDate());
-    const hours = pad(date.getUTCHours());
-    const minutes = pad(date.getUTCMinutes());
-    const seconds = pad(date.getUTCSeconds());
-    const milliseconds = padMilliseconds(date.getUTCMilliseconds());
-    
-    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+00:00`;
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+07:00`;
 };
 
 export const convertDataToOutput = (dateString) => {

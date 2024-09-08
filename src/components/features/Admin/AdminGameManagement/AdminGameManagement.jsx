@@ -42,6 +42,8 @@ export default function AdminGameManagement() {
   }, [gameInfo])
   console.log(listItems)
 
+  
+
   return (
     <div className="container w-full my-4">
       {isOpenEditGame && <AdminEditGameForm gameInfo={gameInfo} handleClose={handleCloseEditGame}/>}

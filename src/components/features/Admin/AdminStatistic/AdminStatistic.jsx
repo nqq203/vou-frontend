@@ -7,8 +7,8 @@ const DynamicPieChart = dynamic(() => import("@components/common/PieChart"), { s
 export default function AdminStatistic({listNumUsers}) {
   // [Player, brand, admin]
   // const listNumOfUsers = listNumUsers; 
-  const dataThisYear = [12000, 19000, 3000, 5000, 2000, 30000, 45000];
-  const dataLastYear = [15000, 23000, 7000, 5000, 3000, 20000, 30000];
+  const dataThisYear = [5, 5, 8, 10, 15, 15, 15];
+  const dataLastYear = [1, 2, 3, 3, 4, 5, 5];
 
   return (
     <div className="flex flex-row overscroll-y-none">

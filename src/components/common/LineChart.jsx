@@ -9,7 +9,7 @@ const LineChart = ({dataThisYear, dataLastYear}) => {
         const myChart = new Chart(chartRef.current, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8'],
                 datasets: [{
                     label: 'This year',
                     data: dataThisYear,
