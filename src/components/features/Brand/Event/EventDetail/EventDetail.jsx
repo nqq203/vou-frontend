@@ -44,6 +44,7 @@ const EventDetail = () => {
   const [listBrands, setListBrands] = useState([])
 
   // Event
+  const [isNewImgs, setIsNewImgs] = useState(false);
   const [banner, setBanner] = useState(undefined)
   const [qrImg, setQrImg] = useState(undefined)
   const [voucherImg, setvoucherImg] = useState(undefined)
@@ -135,7 +136,6 @@ const EventDetail = () => {
   )
   useEffect(()=>{
     console.log("Refecth")
-    window.scrollTo(0, 0);
     refetch();
   },[idEvent])
 
@@ -144,7 +144,7 @@ const EventDetail = () => {
       const newEvent = await callApiUpdateEventDetail(idEvent,data);
       // console.log("Update Eve: ",newEvent);
 
-      if (banner && qrImg && voucherImg) {
+      if(banner instanceof File) {
         const images = {
           bannerFile: banner,
           QRImage: qrImg,
@@ -310,8 +310,9 @@ const EventDetail = () => {
 
     
     console.log(data);
-    setTest(data)
+    // setTest(data)
     setDataEvent(data);
+    window.scrollTo(0, 0);
 
     updateEventMutation.mutate(data);
   }
@@ -345,7 +346,7 @@ const EventDetail = () => {
           <IoChevronBackCircle size={40} />
         </div>
         <TitlePage title={"Thông tin sự kiện"} />
-        <h5>{JSON.stringify(test)}</h5>
+        {/* <h5>{JSON.stringify(test)}</h5> */}
 
       </div>
 

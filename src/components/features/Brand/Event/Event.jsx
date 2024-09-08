@@ -269,6 +269,8 @@ const Event = () => {
       return;
     }
 
+    const filterQuizData = quizData.filter(quiz => quiz.question != "")
+
     const data = {
       eventName: dataEvent.eventName,
       numberOfVouchers: parseInt(numOfVouchers),
@@ -291,13 +293,14 @@ const Event = () => {
         name: gameName,
         gameType: gameType === "Quizz" ? "quiz-game" : "shake-game",
         startedAt: convertInputToSave(startedAt),
-        quiz: quizData,        
+        quiz: filterQuizData,        
       },
     };
     
     console.log(data);
     
-    setTest(data);
+    // setTest(data);
+    window.scrollTo(0, 0);
     createEventMutation.mutate(data);
   }
 
@@ -316,7 +319,7 @@ const Event = () => {
             title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
       </div>
       <TitlePage title={"Đăng ký sự kiện"} />
-      <h5>{JSON.stringify(test)}</h5>
+      {/* <h5>{JSON.stringify(test)}</h5> */}
 
       <div className='container flex bg-white shadow-md rounded-3xl py-5 px-5 my-4 gap-5 border border-gray-200'>
         <form className="container" ref={formDataEvent} onSubmit={(e) => preventSubmit(e)}>    

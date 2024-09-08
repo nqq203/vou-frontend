@@ -9,14 +9,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState,useEffect } from 'react';
 import TitlePage from '@components/common/TitlePage';
 import { updateStatesEvent } from '@redux/event';
-import { callApiGetAllBrands } from '@pages/api/brand';
-import { callApiGetItems } from '@pages/api/item';
 import { useQuery } from 'react-query';
-import { callApiGetAllUser } from '@pages/api/user';
 import { useMemo } from 'react';
 import Table from '@components/common/Table';
 import { convertDataToOutputString } from '@utils/date';
 import { IoMdClose } from "react-icons/io"
+import { callApiGetAllUser } from '@pages/api/user';
+import { callApiGetAllBrands } from '@pages/api/brand';
+import { callApiGetItems } from '@pages/api/item';
+import { callApiGetDashboardAdmin } from '@pages/api/statistic';
 
 const Admin = () => {
   const router = useRouter();
@@ -95,10 +96,12 @@ const Admin = () => {
     }
   })
   const idUser = useSelector(state => state.auth.idUser);
+  const [totalEvents, setTotalEvents] = useState(0);
+  const [totalVouchers, setTotalVouchers] = useState(0);
   const [totalBrandAccounts, setTotalBrandAccounts] = useState(0);
   const [totalPlayerAccounts, setTotalPlayerAccounts] = useState(0);
-  const [fullListEvents, setFullListEvents] = useState(temp)
-  const [listEvents, setListEvents] = useState(list);
+  const [fullListEvents, setFullListEvents] = useState([])
+  const [listEvents, setListEvents] = useState([]);
   const [isOpenInfoForm, setIsOpenInfoForm] = useState(false);
   const [eventInfo, setEventInfo] = useState(null);
   
@@ -125,12 +128,12 @@ const Admin = () => {
     {
       icon: <FaSackDollar size={32} />,
       name: 'Tổng số sự kiện',
-      value: '12,750',
+      value: totalEvents,
     }, 
     {
       icon: <FaHandHoldingDollar size={32} />,
       name: 'Tổng số vouchers',
-      value: '5,600',
+      value: totalVouchers,
     },
     {
       icon: <Image
@@ -158,15 +161,6 @@ const Admin = () => {
 
   const newRows = useMemo(() => {
     const nRows = listEvents.map((row,index) => {
-      // if (row.status.toLowerCase() === 'active') {
-      //   return {...row, status: <div className="border-2 border-active rounded-[50px] pl-[10px] pr-[10px] pt-1 pb-1 text-active">Active</div>}
-      // }
-      // else if (row.status.toLowerCase() === 'inactive') {
-      //   return {...row, status: <div className="border-2 border-red rounded-[50px] pl-1 pr-1 pt-1 pb-1 text-red">Inactive</div>}
-      // }
-      // else if (row.status.toLowerCase() === 'pending') {
-      //   return {...row, status: <div className="border-2 border-pending rounded-[50px] pl-1 pr-1 pt-1 pb-1 text-pending">Pending</div>}
-      // }
       return row;
     })
     return nRows
@@ -195,7 +189,8 @@ const Admin = () => {
     "fetch-items-accounts",
     async () => {
       const accounts = await callApiGetAllUser(idUser);
-      return {accounts}
+      const dataStatistic = await callApiGetDashboardAdmin();
+      return {accounts,dataStatistic}
     },
     {
       onSuccess: (data) => {
@@ -215,7 +210,27 @@ const Admin = () => {
           })
         }
         setTotalBrandAccounts(numberOfBrand);
-        setTotalPlayerAccounts(numberOfPlayer);          
+        setTotalPlayerAccounts(numberOfPlayer);  
+
+        if(data.dataStatistic?.success){
+          const statistic = data.dataStatistic?.metadata;
+          console.log("HE: ",statistic);
+          setTotalEvents(data.dataStatistic?.metadata?.totalEvents);
+          setTotalVouchers(data.dataStatistic?.metadata?.totalVouchers);
+          setFullListEvents(data.dataStatistic?.metadata?.eventList)
+          const list = data.dataStatistic?.metadata?.eventList.map((event,index) => {
+            return {
+              no: index+1,
+              name: event.eventName,
+              email: event.numberOfVouchers || 0,
+              phone: event.shareCount || 0,
+              role: convertDataToOutputString(event.startDate),
+              status: convertDataToOutputString(event.endDate),
+            }
+          })
+          setListEvents(list);
+        }
+        
       },
       onError: (error) => {
         // Handle error and log the appropriate message
@@ -223,6 +238,10 @@ const Admin = () => {
       },      
     }
   )
+
+  useEffect(() => {
+
+  },[fullListEvents])
 
   
 
@@ -242,7 +261,7 @@ const Admin = () => {
                 <h3 className="font-bold text-[24px]">Thông tin sự kiện</h3>
 
                 <div className="mr-5 flex justify-center items-center">
-                  <img src={eventInfo.imageUrl} alt="avt" className="h-[200px]"  />
+                  <img src={eventInfo.imageUrl || "https://placehold.co/400x200"} alt="avt" className="h-[200px]"  />
                 </div>
                 
                 <div className="flex gap-3">
@@ -252,19 +271,19 @@ const Admin = () => {
                   </div>
                   <div className="flex flex-col py-2 grow">
                       <h5 className="text-base font-semibold">Số lượt chia sẻ</h5>
-                      <div className="input_text">{eventInfo.shareCount}</div>
+                      <div className="input_text">{eventInfo.shareCount || 0}</div>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
                   <div className="flex flex-col py-2 w-[50%]">
                       <h5 className="text-base font-semibold">Tổng số vouchers</h5>
-                      <div className="input_text">{eventInfo.numberOfVouchers}</div>
+                      <div className="input_text">{eventInfo.numberOfVouchers || 0}</div>
                   </div>
 
                   <div className="flex flex-col py-2 grow">
                       <h5 className="text-base font-semibold">Số lượng vouchers còn lại</h5>
-                      <div className="input_text">{eventInfo.remainingVouchers}</div>
+                      <div className="input_text">{eventInfo.remainingVouchers || 0}</div>
                   </div>
                 </div>
 
