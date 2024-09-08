@@ -6,7 +6,7 @@ import AdminOverview from './AdminOverview/AdminOverview'
 import AdminStatistic from './AdminStatistic/AdminStatistic'
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import TitlePage from '@components/common/TitlePage';
 import { updateStatesEvent } from '@redux/event';
 import { callApiGetAllBrands } from '@pages/api/brand';
@@ -16,6 +16,7 @@ import { callApiGetAllUser } from '@pages/api/user';
 import { useMemo } from 'react';
 import Table from '@components/common/Table';
 import { convertDataToOutputString } from '@utils/date';
+import { IoMdClose } from "react-icons/io"
 
 const Admin = () => {
   const router = useRouter();
@@ -94,19 +95,16 @@ const Admin = () => {
     }
   })
   const idUser = useSelector(state => state.auth.idUser);
-  const [totalAccounts, setTotalAccounts] = useState(0);
+  const [totalBrandAccounts, setTotalBrandAccounts] = useState(0);
+  const [totalPlayerAccounts, setTotalPlayerAccounts] = useState(0);
   const [fullListEvents, setFullListEvents] = useState(temp)
   const [listEvents, setListEvents] = useState(list);
   const [isOpenInfoForm, setIsOpenInfoForm] = useState(false);
   const [eventInfo, setEventInfo] = useState(null);
   
-
-  function handleCloseForm() {
-    setIsOpenEditAccount(false)
-  }
   
   function handleOpenForm() {
-    setIsOpenEditAccount(true)
+    setIsOpenInfoForm(true)
   }
 
   const header = [
@@ -142,8 +140,8 @@ const Admin = () => {
               height={32}
               className="object-contain"
             />,
-      name: 'Tổng số lượt chia sẻ',
-      value: '3,460',
+      name: 'Số tài khoản Brands',
+      value: totalBrandAccounts,
     },
     {
       icon: <Image
@@ -153,8 +151,8 @@ const Admin = () => {
               height={32}
               className="object-contain"
             />,
-      name: 'Tổng số tài khoản',
-      value: totalAccounts,
+      name: 'Số tài khoản Players',
+      value: totalPlayerAccounts,
     }
   ]
 
@@ -174,38 +172,118 @@ const Admin = () => {
     return nRows
   }, [listEvents])
 
-  const {isFetching, refetch} = useQuery(
-    "fetch-items-accounts",
-    async () => {
-      const accounts = await callApiGetAllUser(idUser);
-      const items = await callApiGetItems();
-      return {accounts,items}
-    },
+  const {isFetching: isFetchingItems, refetch: refetchItems} = useQuery(
+    "fetch-items",
+    () => callApiGetItems(),
     {
       onSuccess: (data) => {
         console.log(data);
-        const totalAccs = data.accounts?.metadata?.length;
-        setTotalAccounts(totalAccs);
         const listAvailableBrands = [];
-        const listAvailableItems = data.items?.metadata;
+        const listAvailableItems = data.metadata;
         dispatch(updateStatesEvent({listAvailableBrands,listAvailableItems}))        
       },
       onError: (error) => {
         // Handle error and log the appropriate message
         console.log(error.response?.data?.message || error.message);
-      },
+      },      
       staleTime: Infinity, // Data will never be considered stale
-      cacheTime: Infinity, // Data will be cached indefinitely      
+      cacheTime: Infinity, // Data will be cached indefinitely   
     }
   )
 
-  
+  const {isFetching, refetch} = useQuery(
+    "fetch-items-accounts",
+    async () => {
+      const accounts = await callApiGetAllUser(idUser);
+      return {accounts}
+    },
+    {
+      onSuccess: (data) => {
+        console.log(data);
+        const totalAccs = data.accounts?.metadata;
+        // const totalAccs = temp
+        let numberOfBrand = 0;
+        let numberOfPlayer = 0;
+
+        if(totalAccs.length != 0){
+          totalAccs?.map((user,index) => {
+            if(user.role === "BRAND"){
+              numberOfBrand++;
+            } else if(user.role === "PLAYER"){
+              numberOfPlayer++;
+            }
+          })
+        }
+        setTotalBrandAccounts(numberOfBrand);
+        setTotalPlayerAccounts(numberOfPlayer);          
+      },
+      onError: (error) => {
+        // Handle error and log the appropriate message
+        console.log(error.response?.data?.message || error.message);
+      },      
+    }
+  )
+
   
 
   return (
     <div className='container w-full my-4'>
       <TitlePage title={"Dashboard"} />
+      {isOpenInfoForm ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-10">
+          <div className="relative bg-white p-5 rounded-lg shadow-lg w-full max-w-4xl h-auto mx-4">
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-900"
+              onClick={() => setIsOpenInfoForm(false)}>
+              <IoMdClose size={24} />
+            </button>
+            <div className="mx-4">
+              <div className="flex flex-col gap-3">
+                <h3 className="font-bold text-[24px]">Thông tin sự kiện</h3>
 
+                <div className="mr-5 flex justify-center items-center">
+                  <img src={eventInfo.imageUrl} alt="avt" className="h-[200px]"  />
+                </div>
+                
+                <div className="flex gap-3">
+                  <div className="flex flex-col py-2 w-[50%]">
+                      <h5 className="text-base font-semibold">Tên sự kiện</h5>
+                      <div className="input_text">{eventInfo.eventName}</div>
+                  </div>
+                  <div className="flex flex-col py-2 grow">
+                      <h5 className="text-base font-semibold">Số lượt chia sẻ</h5>
+                      <div className="input_text">{eventInfo.shareCount}</div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex flex-col py-2 w-[50%]">
+                      <h5 className="text-base font-semibold">Tổng số vouchers</h5>
+                      <div className="input_text">{eventInfo.numberOfVouchers}</div>
+                  </div>
+
+                  <div className="flex flex-col py-2 grow">
+                      <h5 className="text-base font-semibold">Số lượng vouchers còn lại</h5>
+                      <div className="input_text">{eventInfo.remainingVouchers}</div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex flex-col py-2 w-[50%]">
+                      <h5 className="text-base font-semibold">Ngày bắt đầu</h5>
+                      <div className="input_text">{convertDataToOutputString(eventInfo.startDate)}</div>
+                  </div>
+
+                  <div className="flex flex-col py-2 grow">
+                      <h5 className="text-base font-semibold">Ngày kết thúc</h5>
+                      <div className="input_text">{convertDataToOutputString(eventInfo.endDate)}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ): null}
       <AdminOverview overview={overview}/>
 
       <Table head={header} rows={newRows} listUsers={fullListEvents} isEditTable={false} scrollViewStyle={scrollViewStyle} 

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export default function Table({ head, rows, listUsers, isEditTable, scrollViewStyle, setInfo, handleOpenForm }) {
   
   return (
-    <div className="rounded-lg shadow-md mt-5 border-spacing-x-2 bg-white border border-gray-200">
+    <div className="rounded-lg shadow-md mt-5 border-spacing-x-2 bg-white max-h-[500px] overflow-hidden border border-gray-200">
       <table className="table-fixed text-center items-center ml-2 mr-10">
         <div className="h-[50x]"> {/* this is make for the header is aligned evenly with the body*/}
           <thead className="h-[70px]">

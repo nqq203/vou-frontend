@@ -83,7 +83,9 @@ const Brand = () => {
 
       <SearchBar/>
       <div className="container flex flex-wrap gap-6 my-4">
-      {
+      { listEvents.length === 0 ? (
+        <div className="text-lg font-regular my-2">Bạn chưa có sự kiện nào</div>
+      ) : (
         listEvents.map(event => {
           const status = compareDates(event.startDate, event.endDate);
           return <Card id={event.idEvent} key={event.idEvent}
@@ -93,7 +95,8 @@ const Brand = () => {
             status={status} 
             bannerImg={event.imageUrl}
             />
-        })
+        }) 
+      )
       }
       </div>
     </div>
