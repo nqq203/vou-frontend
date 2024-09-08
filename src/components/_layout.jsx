@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import RootLayout from './features/layout';
+import RootLayout from './features/Layout';
 
 const mapStateToProps = (state) => ({
 	auth: state.auth,

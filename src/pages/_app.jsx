@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { useRouter } from 'next/router'
 import ScrollView from '@components/common/ScrollView'
 import AuthValidation from '@components/Auth/AuthValidation'
+import { useEffect } from 'react'
 
 
 const queryClient = new QueryClient({
@@ -34,7 +35,7 @@ export default function App({ Component, pageProps }) {
         <PersistGate loading={null} persistor={persistor}>
           <ScrollView style={layoutScrollViewStyle}>
             <AuthValidation>
-              {unauthorizedPage.includes(Component.name) ? (
+              {Component.unauthorized ? (
                 <>
                   <Component {...pageProps} />
                 </>
