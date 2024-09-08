@@ -3,26 +3,30 @@ import { useState } from 'react';
 const FormGame = ({ quizData, setQuizData }) => {
   const handleInputChange = (index, field, value) => {
     const updatedQuizData = [...quizData];
-    updatedQuizData[index][field] = value;
-    setQuizData(updatedQuizData);
+    if(updatedQuizData[index] != null){
+      updatedQuizData[index][field] = value;
+      setQuizData(updatedQuizData);
+    }
   };
 
   const handleCorrectAnswerChange = (index, value) => {
     const updatedQuizData = [...quizData];
-    updatedQuizData[index].correctAnswerIndex = parseInt(value, 10);
-    setQuizData(updatedQuizData);
+    if(updatedQuizData[index] != null){
+      updatedQuizData[index].correctAnswerIndex = parseInt(value, 10);
+      setQuizData(updatedQuizData);
+    }
   };
 
   return (
     <div>
-      {Array.from({ length: 10 }).map((_, i) => (
+      {Array.from({ length: quizData.length }).map((_, i) => (
         <div className="flex flex-col px-2 py-2 mb-2" key={i}>
           <h5 className="text-base font-semibold ">Câu hỏi {i + 1}</h5>
           <input
             type="text"
             className="input_text"
             placeholder="Tên"
-            value={quizData[i].question}
+            value={quizData[i]?.question || ""}
             onChange={(e) => handleInputChange(i, 'question', e.target.value)}
             required
           />
@@ -34,7 +38,7 @@ const FormGame = ({ quizData, setQuizData }) => {
                 type="text"
                 className="input_text"
                 placeholder="Câu trả lời"
-                value={quizData[i].ans1}
+                value={quizData[i]?.ans1 || ""}
                 onChange={(e) => handleInputChange(i, 'ans1', e.target.value)}
                 required
               />
@@ -46,7 +50,7 @@ const FormGame = ({ quizData, setQuizData }) => {
                 type="text"
                 className="input_text"
                 placeholder="Câu trả lời"
-                value={quizData[i].ans2}
+                value={quizData[i]?.ans2 || ""}
                 onChange={(e) => handleInputChange(i, 'ans2', e.target.value)}
                 required
               />
@@ -58,7 +62,7 @@ const FormGame = ({ quizData, setQuizData }) => {
                 type="text"
                 className="input_text"
                 placeholder="Câu trả lời"
-                value={quizData[i].ans3}
+                value={quizData[i]?.ans3 || ""}
                 onChange={(e) => handleInputChange(i, 'ans3', e.target.value)}
                 required
               />
@@ -68,7 +72,7 @@ const FormGame = ({ quizData, setQuizData }) => {
           <div className="flex gap-4">
             <label className="font-medium">Chọn đáp án đúng:</label>
             <select
-              value={quizData[i].correctAnswerIndex}
+              value={quizData[i]?.correctAnswerIndex || 0}
               onChange={(e) => handleCorrectAnswerChange(i, e.target.value)}
               required
             >

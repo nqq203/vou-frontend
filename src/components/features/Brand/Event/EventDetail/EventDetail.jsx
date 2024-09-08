@@ -272,6 +272,7 @@ const EventDetail = () => {
     if(!isValidData){
       return;
     }
+
     
     // ...dataEvent,
     const data = {
