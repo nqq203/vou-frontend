@@ -6,7 +6,7 @@ const Card = ({id,name, date, vouchers,status, bannerImg}) => {
   const {push} = useRouter();
 
   const viewDetailEvent = () => {
-    push(`/brand/event/eventDetail?id=${id}&s=${status}`);
+    push(`/brand/event/eventDetail?id=${id}&s=${status}`, {scroll: true});
   }
 
   return (

@@ -15,6 +15,7 @@ import Tag from "@components/common/Tag";
 import CheckBox from "@components/common/CheckBox";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { IoChevronBackCircle } from "react-icons/io5";
+import { PropagateLoader } from 'react-spinners';
 
 import Notification from "@components/common/Notification";
 import TitlePage from "@components/common/TitlePage";
@@ -25,6 +26,7 @@ import { callApiGetEventDetail, callApiUpdateEventDetail,callApiUploadEventImgs 
 const EventDetail = () => {
   
   const {push} = useRouter();
+  const [isLoading, setIsLoading] = useState(true)
   const searchParams = useSearchParams();
   const status = searchParams.get('s') || "active";
   const idEvent = searchParams.get('id') || 0;  
@@ -126,6 +128,7 @@ const EventDetail = () => {
 
         const dataBrand = data.metadata?.brandId
         setListBrands(dataBrand.map(brand => brand.idBrand));
+        setIsLoading(false)
       },
       onError: (error) => {
         const msgErr = error.response.data.message;
@@ -136,7 +139,6 @@ const EventDetail = () => {
     }
   )
   useEffect(()=>{
-    window.scrollTo(0, 0);
     console.log("Refecth")
     refetch();
   },[idEvent])
@@ -344,6 +346,13 @@ const EventDetail = () => {
 
   return(
     <div className='container w-full my-4'>
+      {isLoading ? (
+        <div className="flex w-[90%] h-screen items-center justify-center absolute z-50">
+          <PropagateLoader color="#EA661C" />
+        </div>
+      ) : (
+        <>
+
       <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end` }>
         <Notification type={`${isError ? 'error' : 'success'}` } 
             title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
@@ -588,6 +597,8 @@ const EventDetail = () => {
           )}
         </form>
       </div>
+      </>
+      )}
     </div>
   )
 }

@@ -1,10 +1,7 @@
 'use client'
 import { useState,useRef } from "react"
 import DatePicker from "react-datepicker";
-import moment from "moment-timezone";
-import { useRouter } from "next/navigation";    
 import "react-datepicker/dist/react-datepicker.css";
-import { format } from "date-fns";
 import { useMutation } from "react-query";
 
 import ImageUploader from "@components/common/ImageUploader";
@@ -14,15 +11,14 @@ import Notification from "@components/common/Notification";
 import TitlePage from "@components/common/TitlePage";
 import FormGame from "./FormGame";
 import { callApiCreateEvent, callApiUploadEventImgs } from "@pages/api/event";
-import { callApiGetItems } from "@pages/api/item";
 import { convertInputToSave } from "@utils/date";
-import { useQuery } from "react-query";
-import { callApiGetAllBrands } from "@pages/api/brand";
 import { useSelector } from "react-redux";
-import {da, vi} from 'date-fns/locale'
+import {vi} from 'date-fns/locale'
+import { PropagateLoader } from 'react-spinners';
 
 const Event = () => {
   const formDataEvent = useRef(null);
+  const [isLoading, setIsLoading] = useState(false)
   const [dataEvent, setDataEvent] = useState({ gameInfoDTO: {},});
   const idBrand = useSelector(state => state.auth.idUser);
   const eventStore = useSelector(state=> state.event);
@@ -141,12 +137,7 @@ const Event = () => {
   }
 
   const resetForm = () => {
-    // reset form Game
-    formDataEvent.current.reset();
-
     setIsEventForm(true);
-    // reset form event
-    formDataEvent.current.reset();
     setDataEvent({ gameInfoDTO: {},});
     
     setListItems([]);
@@ -194,6 +185,7 @@ const Event = () => {
     {
       onSuccess: (data) => {
         console.log(data)
+        setIsLoading(false);
         
         resetForm();
 
@@ -202,6 +194,7 @@ const Event = () => {
         setNotiMsg("Tạo sự kiện mới thành công");
       },
       onError: (error) => {
+        setIsLoading(false);
         const msgErr = error.response.data.message;
         setIsError(true);
         setShowNoti(true);
@@ -268,6 +261,7 @@ const Event = () => {
     if(!isValidData){
       return;
     }
+    setIsLoading(true)
 
     const filterQuizData = quizData.filter(quiz => quiz.question != "")
 
@@ -312,8 +306,16 @@ const Event = () => {
     setShowNoti(false)
   }
 
+
   return(
     <div className='container w-full my-4'>
+    {isLoading ? (
+        <div className="flex w-[90%] h-screen items-center justify-center absolute z-50">
+          <PropagateLoader color="#EA661C" />
+        </div>
+      ) : (
+        <>
+
       <div className={`${showNoti ? '' : 'hidden'} flex flex-row justify-end`}>
         <Notification type={`${isError ? 'error' : 'success'}` } 
             title={`${isError ? 'Có lỗi xảy ra' : 'Thành công'}` }  content={notiMsg} close={closeNoti}/>
@@ -569,6 +571,8 @@ const Event = () => {
           )}
         </form>
       </div>
+      </>
+      )}
     </div>
   )
 }
