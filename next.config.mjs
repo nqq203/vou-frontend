@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://127.0.0.1:8080/api/v1/:path*',
+        destination: ' https://1a13-2401-d800-fac1-a963-dc0-46e-9d89-87df.ngrok-free.app/api/v1/:path*',
       },
     ];
   },
