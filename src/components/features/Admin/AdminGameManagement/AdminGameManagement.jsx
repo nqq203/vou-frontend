@@ -19,7 +19,7 @@ export default function AdminGameManagement() {
       exchangeItems: [],
     },
     {
-      title: "Lắc vật phẩm",
+      title: "Lắc Xu",
       imageUrl: "/images/shakeGame.png",
       type: "Giải trí",
       description: "Lắc Xu là game tương tác, trong đó người dùng lắc điện thoại để nhận các vật phẩm ngẫu nhiên như xu, quà, hoặc điểm thưởng. Các vật phẩm thu thập được có thể dùng để đổi lấy phần thưởng hấp dẫn, tạo cảm giác hứng thú và hồi hộp khi chơi",

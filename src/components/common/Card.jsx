@@ -6,7 +6,6 @@ const Card = ({id,name, date, vouchers,status, bannerImg}) => {
   const {push} = useRouter();
 
   const viewDetailEvent = () => {
-    // redirect: fix id
     push(`/brand/event/eventDetail?id=${id}&s=${status}`);
   }
 

@@ -23,6 +23,7 @@ import { convertDataToOutput,convertInputToSave, convertDataToOutputString } fro
 import { callApiGetEventDetail, callApiUpdateEventDetail,callApiUploadEventImgs } from "@pages/api/event";
 
 const EventDetail = () => {
+  
   const {push} = useRouter();
   const searchParams = useSearchParams();
   const status = searchParams.get('s') || "active";
@@ -135,6 +136,7 @@ const EventDetail = () => {
     }
   )
   useEffect(()=>{
+    window.scrollTo(0, 0);
     console.log("Refecth")
     refetch();
   },[idEvent])
@@ -330,7 +332,11 @@ const EventDetail = () => {
   // routing to dashboard & home
   const {router} = useRouter();
   const toDashboard = () => {
-    push('/brand/event/eventDashboard');
+    if(gameType === "Lắc xu"){
+      push(`/brand/event/eventDashboard?e=${idEvent}&t=1`);
+    } else {
+      push(`/brand/event/eventDashboard?e=${idEvent}&t=2`);
+    }
   }
   const goBackToHomepage = () => {
     push('/brand');
@@ -440,10 +446,15 @@ const EventDetail = () => {
               <div className="flex gap-4">  
                 <div className="flex flex-col px-2 py-1 grow">
                     <h5 className="text-base font-semibold">Loại voucher</h5>
-                    <div className="input_dropdown" onClick={() => {if(status === 'done') {return;} changeCategoryVoucher(openCategoryVoucher)}}>
-                    <span className='text-gray-900'>{voucherType}</span>
-                    <MdOutlineArrowDropDown size={28}/>
-                    </div>
+                    {status === 'done' ? (
+                      <input disabled type="text" className={"input_text_disabled"} value={voucherType || ''} />
+                    ) : (
+                      <div className="input_dropdown" 
+                      onClick={() => {if(status === 'done') {return;} changeCategoryVoucher(openCategoryVoucher)}}>
+                      <span className='text-gray-900'>{voucherType}</span>
+                      <MdOutlineArrowDropDown size={28}/>
+                      </div>
+                    )}
 
                     {openCategoryVoucher ? 
                     (
@@ -539,7 +550,7 @@ const EventDetail = () => {
                       timeIntervals={15}
                     />
                   </div>
-                  <FormGame quizData={quizData} setQuizData={setQuizData} />
+                  <FormGame quizData={quizData} setQuizData={setQuizData} status={status} />
                 </>
               ) : (
                 <div className="flex flex-col px-2 py-2 mb-2">

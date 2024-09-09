@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const FormGame = ({ quizData, setQuizData }) => {
+const FormGame = ({ quizData, setQuizData, status }) => {
   const handleInputChange = (index, field, value) => {
     const updatedQuizData = [...quizData];
     if(updatedQuizData[index] != null){
@@ -24,7 +24,8 @@ const FormGame = ({ quizData, setQuizData }) => {
           <h5 className="text-base font-semibold ">Câu hỏi {i + 1}</h5>
           <input
             type="text"
-            className="input_text"
+            disabled={status === 'done'}
+            className={`${status === 'done' ? "input_text_disabled" : "input_text"}`}
             placeholder="Tên"
             value={quizData[i]?.question || ""}
             onChange={(e) => handleInputChange(i, 'question', e.target.value)}
@@ -36,7 +37,8 @@ const FormGame = ({ quizData, setQuizData }) => {
               <h5 className="text-base font-medium">Đáp án 1</h5>
               <input
                 type="text"
-                className="input_text"
+                disabled={status === 'done'}
+                className={`${status === 'done' ? "input_text_disabled" : "input_text"}`}
                 placeholder="Câu trả lời"
                 value={quizData[i]?.ans1 || ""}
                 onChange={(e) => handleInputChange(i, 'ans1', e.target.value)}
@@ -48,7 +50,8 @@ const FormGame = ({ quizData, setQuizData }) => {
               <h5 className="text-base font-medium">Đáp án 2</h5>
               <input
                 type="text"
-                className="input_text"
+                disabled={status === 'done'}
+                className={`${status === 'done' ? "input_text_disabled" : "input_text"}`}
                 placeholder="Câu trả lời"
                 value={quizData[i]?.ans2 || ""}
                 onChange={(e) => handleInputChange(i, 'ans2', e.target.value)}
@@ -60,7 +63,8 @@ const FormGame = ({ quizData, setQuizData }) => {
               <h5 className="text-base font-medium">Đáp án 3</h5>
               <input
                 type="text"
-                className="input_text"
+                disabled={status === 'done'}
+                className={`${status === 'done' ? "input_text_disabled" : "input_text"}`}
                 placeholder="Câu trả lời"
                 value={quizData[i]?.ans3 || ""}
                 onChange={(e) => handleInputChange(i, 'ans3', e.target.value)}
@@ -73,6 +77,7 @@ const FormGame = ({ quizData, setQuizData }) => {
             <label className="font-medium">Chọn đáp án đúng:</label>
             <select
               value={quizData[i]?.correctAnswerIndex || 0}
+              disabled={status === 'done'}
               onChange={(e) => handleCorrectAnswerChange(i, e.target.value)}
               required
             >
