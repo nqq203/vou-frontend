@@ -333,7 +333,7 @@ const Event = () => {
                 <div className="flex flex-col px-2 py-2 grow">
                   <h5 className="text-base font-semibold">Tên sự kiện</h5>
                   <input type="text" className="input_text" placeholder="Tên" 
-                    name="eventName" defaultValue={dataEvent.eventName || "" }    required  />
+                    name="eventName" defaultValue={dataEvent.eventName || "" } required  />
                 </div>
   
                 <div className="flex flex-col px-2 py-2 grow">
