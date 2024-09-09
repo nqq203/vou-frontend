@@ -3,7 +3,7 @@ import store from '@redux/store';
 import { jwtDecode } from 'jwt-decode';
 import { logout } from '@redux/auth';
 
-const baseUrl = "http://localhost:3000/api";
+const baseUrl = "http://13.210.51.138:3000/api";
 
 const api = axios.create({
   baseURL: baseUrl,
