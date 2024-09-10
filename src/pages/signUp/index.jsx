@@ -38,7 +38,7 @@ const SignUpPage = () => {
             onSuccess: (data) => {
                 console.log(data);
                 if(data.success){
-                    window.location.href = 'http://localhost:3000/signIn';
+                    window.location.href = 'http://13.210.51.138:3000/signIn';
                 } else {
                     console.log("Sign up failed");
                 }

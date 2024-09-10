@@ -75,9 +75,9 @@ const LoginPage = () => {
                     dispatch(loginSuccess(userInfo))
                     
                     if(account.role === 'BRAND') {
-                        window.location.href = "http://localhost:3000/brand";
+                        window.location.href = "http://13.210.51.138:3000/brand";
                     } else {
-                        window.location.href = "http://localhost:3000/admin";
+                        window.location.href = "http://13.210.51.138:3000/admin";
                     }
                 } else {
                     console.log("Login failed")
