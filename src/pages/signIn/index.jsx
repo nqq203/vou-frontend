@@ -9,9 +9,11 @@ import { callApiSignIn } from '@pages/api/user';
 import { loginSuccess } from '@redux/auth';
 import Notification from '@components/common/Notification';
 import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 
 const LoginPage = () => {
     const dispatch = useDispatch()
+    const router = useRouter();
     const [showNoti, setShowNoti] = useState(false)
     const [isError, setIsError] = useState(false);
     const [notiMsg, setNotiMsg] = useState('')
@@ -75,9 +77,11 @@ const LoginPage = () => {
                     dispatch(loginSuccess(userInfo))
                     
                     if(account.role === 'BRAND') {
-                        window.location.href = "http://13.210.51.138:3000/brand";
+                        // window.location.href = "http://13.210.51.138:3000/brand";
+                        router.push('/brand');
                     } else {
-                        window.location.href = "http://13.210.51.138:3000/admin";
+                        // window.location.href = "http://13.210.51.138:3000/admin";
+                        router.push('/admin');
                     }
                 } else {
                     console.log("Login failed")
