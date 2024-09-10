@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://1a13-2401-d800-fac1-a963-dc0-46e-9d89-87df.ngrok-free.app/api/v1/:path*',
+        destination: 'https://b6d3-14-241-254-70.ngrok-free.app/api/v1/:path*',
       },
     ];
   },
