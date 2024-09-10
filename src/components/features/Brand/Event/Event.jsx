@@ -532,7 +532,7 @@ const Event = () => {
                       onChange={(date) => setGameStartAt(date)}
                       showTimeSelect
                       timeFormat="HH:mm:ss"
-                      timeIntervals={15}
+                      timeIntervals={5}
                     />
 
                   </div>

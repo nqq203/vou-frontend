@@ -99,11 +99,11 @@ const EventDashboard = () => {
     winners: [
       {
       "idUser": 1,
-      "username": "Username",
+      "username": "Player1",
       "password": "pass",
-      "fullName": "Full Name",
-      "email": "Email",
-      "phoneNumber": "0963182221",
+      "fullName": "Player1",
+      "email": "ntklam1223@gmail.com",
+      "phoneNumber": "0963111222",
       "lockedDate": "Date",
       "role": "Player",
       "status": "Active",
@@ -113,11 +113,11 @@ const EventDashboard = () => {
       },
       {
         "idUser": 2,
-        "username": "Username 1",
+        "username": "Player2",
         "password": "pass",
-        "fullName": "Full Name 1",
-        "email": "Email",
-        "phoneNumber": "0963182221",
+        "fullName": "Player2",
+        "email": "anhhoangdl12@gmail.com",
+        "phoneNumber": "0963184122",
         "lockedDate": "Date",
         "role": "Player",
         "status": "Active",
@@ -127,11 +127,11 @@ const EventDashboard = () => {
       },
       {
         "idUser": 3,
-        "username": "Username 2",
+        "username": "Player3",
         "password": "pass",
-        "fullName": "Full Name 2",
-        "email": "Email",
-        "phoneNumber": "0963182221",
+        "fullName": "Player3",
+        "email": "ntklam21@clc.fitus.edu.vn",
+        "phoneNumber": "0963142155",
         "lockedDate": "Date",
         "role": "Player",
         "status": "Active",
@@ -150,18 +150,17 @@ const EventDashboard = () => {
     () => callApiGetEventStatistic(idEvent),
     {
       onSuccess: (data) => {
-        console.log(data);
+        console.log("Statis: ", data);
         if(gameType === "1"){
           setNumOfPlayers(data.metadata?.participants);
           setNumOfGivenVouchers(data.metadata?.givenVouchers);
           setNumOfRemainVouchers(data.metadata?.remainingVouchers);
           setShareCounts(data.metadata?.shareCounts || 0);
         } else {
-          // setNumOfPlayers(data.metadata?.participants);
-          // setWinners(data.metadata?.winners || []);
-          setWinners(fakeData.winners);
-          setNumOfPlayers(fakeData.participants);
-          const list = fakeData.winners.map((user,index) => {
+          setNumOfPlayers(data.metadata?.participants);
+          setWinners(data.metadata?.winners || []);
+          
+          const list = data.metadata?.winners.map((user,index) => {
             return {
               no: index+1,
               name: user.fullName,
@@ -250,7 +249,7 @@ const EventDashboard = () => {
       ])
     }
 
-  },[numOfPlayers,winners,rows])
+  },[numOfPlayers,winners,rows,numOfRemainVouchers,numOfGivenVouchers])
 
   return (
     <div className='container p-6 mx-auto'>
